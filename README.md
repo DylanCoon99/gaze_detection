@@ -203,6 +203,16 @@ Do not change the preprocessing pipeline or test split after step 1.
 - The accuracy cost of binarization and why first/last layers are most sensitive
 - Mixed-precision strategies and how they map to FPGA LUT-based BNN accelerators
 
+### Performance profiling (cross-cutting)
+- C++ profiling with `perf`, `gprof`, and `Valgrind`/`Callgrind` — identifying hotspots in inference code
+- Flame graphs for visualizing call stacks and time spent per function
+- CPU cache behavior and memory access patterns: using `perf stat` to measure cache misses, branch mispredictions, and IPC
+- ARM-specific profiling: NEON utilization, pipeline stalls, and thermal throttling on the Pi
+- ML model profiling: per-layer latency breakdown using TFLite's built-in profiler and `benchmark_model --enable_op_profiling`
+- PyTorch Profiler (`torch.profiler`) for training-side bottleneck analysis — CPU vs GPU time, operator-level breakdown
+- Memory profiling: tracking peak RSS, heap allocations (`massif`), and memory fragmentation during inference
+- Microbenchmarking discipline: warm-up runs, statistical aggregation (mean/p95/p99), and controlling for thermal throttling and CPU governor state
+
 ---
 
 ## Key Papers
@@ -233,6 +243,16 @@ Do not change the preprocessing pipeline or test split after step 1.
 | Profiling | perf, `/proc/self/status`, UM25C power meter | Pi-native tooling |
 
 Vanilla PyTorch is not used for on-device inference. It is not optimized for ARM and the overhead is significant compared to TFLite with XNNPACK.
+
+---
+
+## CI / GitHub Actions
+
+### Unit tests
+A GitHub Actions workflow runs `pytest` on every push and pull request. Tests cover the preprocessing pipeline, data loading, loss functions, harness utilities, and model construction — anything that does not require a GPU or Raspberry Pi hardware. Training smoke tests (1 epoch on a tiny data subset) verify that training loops don't crash due to shape mismatches or broken augmentation.
+
+### Dependency management
+Dependabot is enabled to monitor Python dependencies (PyTorch, TFLite, Brevitas, torch-pruning, etc.) and open PRs for version bumps automatically. This keeps the project current with security patches and API changes without manual tracking.
 
 ---
 
