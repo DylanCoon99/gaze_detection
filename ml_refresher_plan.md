@@ -23,11 +23,11 @@
 
 ### Exercises
 - [ ] Implement matrix multiplication from scratch in NumPy, then compare with `np.matmul`
-- [ ] Compute gradients by hand for `f(x,y) = 3x²y + y³`, verify with a numerical gradient checker: `(f(x+h) - f(x-h)) / 2h`
+- [x] Compute gradients by hand for `f(x,y) = 3x²y + y³`, verify with a numerical gradient checker: `(f(x+h) - f(x-h)) / 2h`
 - [ ] Implement a numerical gradient checker function that works for any scalar function
 - [ ] Derive the posterior for a coin-flip problem using Bayes' theorem (prior = Beta(2,2), observe 7 heads in 10 flips)
 - [ ] Show that minimizing MSE is equivalent to maximum likelihood estimation under Gaussian noise — derive it
-- [ ] Compute eigenvalues/eigenvectors of a 2×2 matrix by hand, verify with `np.linalg.eig`
+- [x] Compute eigenvalues/eigenvectors of a 2×2 matrix by hand, verify with `np.linalg.eig`
 
 ### Resources
 - **3Blue1Brown "Essence of Linear Algebra"** (YouTube, ~3 hrs total) — watch chapters 1–7 for vectors, matrices, determinants, eigenvalues
