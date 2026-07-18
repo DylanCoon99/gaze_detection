@@ -22,12 +22,12 @@
   - Maximum likelihood estimation (MLE) — connects to loss functions later
 
 ### Exercises
-1. Implement matrix multiplication from scratch in NumPy, then compare with `np.matmul`
-2. Compute gradients by hand for `f(x,y) = 3x²y + y³`, verify with a numerical gradient checker: `(f(x+h) - f(x-h)) / 2h`
-3. Implement a numerical gradient checker function that works for any scalar function
-4. Derive the posterior for a coin-flip problem using Bayes' theorem (prior = Beta(2,2), observe 7 heads in 10 flips)
-5. Show that minimizing MSE is equivalent to maximum likelihood estimation under Gaussian noise — derive it
-6. Compute eigenvalues/eigenvectors of a 2×2 matrix by hand, verify with `np.linalg.eig`
+- [ ] Implement matrix multiplication from scratch in NumPy, then compare with `np.matmul`
+- [ ] Compute gradients by hand for `f(x,y) = 3x²y + y³`, verify with a numerical gradient checker: `(f(x+h) - f(x-h)) / 2h`
+- [ ] Implement a numerical gradient checker function that works for any scalar function
+- [ ] Derive the posterior for a coin-flip problem using Bayes' theorem (prior = Beta(2,2), observe 7 heads in 10 flips)
+- [ ] Show that minimizing MSE is equivalent to maximum likelihood estimation under Gaussian noise — derive it
+- [ ] Compute eigenvalues/eigenvectors of a 2×2 matrix by hand, verify with `np.linalg.eig`
 
 ### Resources
 - **3Blue1Brown "Essence of Linear Algebra"** (YouTube, ~3 hrs total) — watch chapters 1–7 for vectors, matrices, determinants, eigenvalues
@@ -62,13 +62,13 @@
   - How polynomial degree controls this tradeoff
 
 ### Exercises
-1. Generate synthetic data: `y = 3x + 7 + noise`; implement linear regression with batch gradient descent from scratch (no sklearn)
-2. Plot the loss curve over iterations; try learning rates of 0.0001, 0.01, 0.1, and 1.0 — observe convergence, slow convergence, and divergence
-3. Implement the normal equation; verify it gives the same weights as gradient descent
-4. Implement mini-batch gradient descent (batch size 32); compare convergence speed vs batch GD
-5. Generate polynomial data: `y = 0.5x³ - 2x² + x + noise`; fit polynomials of degree 1, 3, 5, 9, 15 — plot training vs validation error for each degree
-6. Implement standardization from scratch; show that gradient descent converges faster on standardized features
-7. Compare your implementation against `sklearn.linear_model.LinearRegression` — verify identical results
+- [ ] Generate synthetic data: `y = 3x + 7 + noise`; implement linear regression with batch gradient descent from scratch (no sklearn)
+- [ ] Plot the loss curve over iterations; try learning rates of 0.0001, 0.01, 0.1, and 1.0 — observe convergence, slow convergence, and divergence
+- [ ] Implement the normal equation; verify it gives the same weights as gradient descent
+- [ ] Implement mini-batch gradient descent (batch size 32); compare convergence speed vs batch GD
+- [ ] Generate polynomial data: `y = 0.5x³ - 2x² + x + noise`; fit polynomials of degree 1, 3, 5, 9, 15 — plot training vs validation error for each degree
+- [ ] Implement standardization from scratch; show that gradient descent converges faster on standardized features
+- [ ] Compare your implementation against `sklearn.linear_model.LinearRegression` — verify identical results
 
 ### Resources
 - **Andrew Ng's Machine Learning Specialization** (Coursera) — Week 1–2 covers linear regression and gradient descent with excellent visual explanations
@@ -108,14 +108,14 @@
   - One-vs-rest vs softmax approaches
 
 ### Exercises
-1. Implement the sigmoid function; plot it and verify it approaches 0 and 1 at extremes
-2. Implement binary cross-entropy loss from scratch; compute it for a few example predictions
-3. Derive the gradient of BCE loss w.r.t. weights on paper, then implement logistic regression with gradient descent
-4. Generate a 2D dataset (two Gaussian blobs with some overlap); train your logistic regression and plot the decision boundary
-5. Create an imbalanced dataset (95% class 0, 5% class 1); train a model and compute accuracy, precision, recall, and F1 — observe why accuracy is misleading
-6. Implement ROC curve plotting from scratch: vary threshold from 0 to 1, compute TPR/FPR at each point, plot, and compute AUC using the trapezoidal rule
-7. Implement softmax and categorical cross-entropy; train a multiclass logistic regression on a 3-class dataset
-8. Compare your implementation against `sklearn.linear_model.LogisticRegression`
+- [ ] Implement the sigmoid function; plot it and verify it approaches 0 and 1 at extremes
+- [ ] Implement binary cross-entropy loss from scratch; compute it for a few example predictions
+- [ ] Derive the gradient of BCE loss w.r.t. weights on paper, then implement logistic regression with gradient descent
+- [ ] Generate a 2D dataset (two Gaussian blobs with some overlap); train your logistic regression and plot the decision boundary
+- [ ] Create an imbalanced dataset (95% class 0, 5% class 1); train a model and compute accuracy, precision, recall, and F1 — observe why accuracy is misleading
+- [ ] Implement ROC curve plotting from scratch: vary threshold from 0 to 1, compute TPR/FPR at each point, plot, and compute AUC using the trapezoidal rule
+- [ ] Implement softmax and categorical cross-entropy; train a multiclass logistic regression on a 3-class dataset
+- [ ] Compare your implementation against `sklearn.linear_model.LogisticRegression`
 
 ### Resources
 - **Andrew Ng's Machine Learning Specialization** (Coursera) — Week 3 covers logistic regression and classification
@@ -159,15 +159,15 @@
   - Stratified K-fold: preserve class proportions in each fold
 
 ### Exercises
-1. Train a decision tree on the Iris dataset; visualize it with `sklearn.tree.plot_tree`; manually trace a prediction through the tree
-2. Train trees of depth 1, 3, 5, 10, None (unlimited); plot training vs validation accuracy for each — observe overfitting
-3. Train a random forest (100 trees) on the same data; compare accuracy and variance vs a single tree
-4. Train gradient boosting (XGBoost or sklearn's `GradientBoostingClassifier`) on a tabular dataset (Titanic or housing prices); tune learning rate and n_estimators
-5. Compare single tree vs random forest vs gradient boosting on the same dataset with the same features — tabulate results
-6. Go back to your Day 2 linear regression; add L2 regularization to the loss and gradient; retrain and plot how coefficients shrink as λ increases
-7. Implement L1 regularization (use subgradient or proximal gradient); observe that some weights go exactly to zero
-8. Implement k-fold cross-validation manually (split indices, loop, aggregate scores); compare against `sklearn.model_selection.cross_val_score`
-9. Use cross-validation to select the best regularization strength λ for Ridge regression
+- [ ] Train a decision tree on the Iris dataset; visualize it with `sklearn.tree.plot_tree`; manually trace a prediction through the tree
+- [ ] Train trees of depth 1, 3, 5, 10, None (unlimited); plot training vs validation accuracy for each — observe overfitting
+- [ ] Train a random forest (100 trees) on the same data; compare accuracy and variance vs a single tree
+- [ ] Train gradient boosting (XGBoost or sklearn's `GradientBoostingClassifier`) on a tabular dataset (Titanic or housing prices); tune learning rate and n_estimators
+- [ ] Compare single tree vs random forest vs gradient boosting on the same dataset with the same features — tabulate results
+- [ ] Go back to your Day 2 linear regression; add L2 regularization to the loss and gradient; retrain and plot how coefficients shrink as λ increases
+- [ ] Implement L1 regularization (use subgradient or proximal gradient); observe that some weights go exactly to zero
+- [ ] Implement k-fold cross-validation manually (split indices, loop, aggregate scores); compare against `sklearn.model_selection.cross_val_score`
+- [ ] Use cross-validation to select the best regularization strength λ for Ridge regression
 
 ### Resources
 - **StatQuest: Decision Trees** (YouTube) — clearest explanation of Gini and entropy splitting
@@ -213,15 +213,15 @@
   - He initialization: `sqrt(2/fan_in)` — designed for ReLU
 
 ### Exercises
-1. Implement a single perceptron; train it on AND, OR gates; show it fails on XOR
-2. Implement a 2-layer neural network from scratch (NumPy only): forward pass, loss, backward pass with chain rule
-3. Train your network on XOR — verify it learns the correct decision boundary
-4. Implement backpropagation step by step: compute `dL/dW2`, `dL/db2`, `dL/dW1`, `dL/db1` by hand for a 2-layer network with ReLU hidden activation, then implement in code
-5. Swap activation functions (sigmoid, tanh, ReLU) in your network; plot training loss curves — observe how sigmoid trains slower due to vanishing gradients
-6. Implement Xavier and He initialization; compare training speed vs random uniform initialization on a 5-layer network
-7. Reimplement the same 2-layer network in PyTorch using `nn.Module`; compare the code side by side with your NumPy version
-8. Train a simple feedforward network (2 hidden layers, 128 units each) on MNIST in PyTorch; aim for >95% accuracy
-9. Visualize the learned first-layer weights on MNIST — they should look like stroke/edge detectors
+- [ ] Implement a single perceptron; train it on AND, OR gates; show it fails on XOR
+- [ ] Implement a 2-layer neural network from scratch (NumPy only): forward pass, loss, backward pass with chain rule
+- [ ] Train your network on XOR — verify it learns the correct decision boundary
+- [ ] Implement backpropagation step by step: compute `dL/dW2`, `dL/db2`, `dL/dW1`, `dL/db1` by hand for a 2-layer network with ReLU hidden activation, then implement in code
+- [ ] Swap activation functions (sigmoid, tanh, ReLU) in your network; plot training loss curves — observe how sigmoid trains slower due to vanishing gradients
+- [ ] Implement Xavier and He initialization; compare training speed vs random uniform initialization on a 5-layer network
+- [ ] Reimplement the same 2-layer network in PyTorch using `nn.Module`; compare the code side by side with your NumPy version
+- [ ] Train a simple feedforward network (2 hidden layers, 128 units each) on MNIST in PyTorch; aim for >95% accuracy
+- [ ] Visualize the learned first-layer weights on MNIST — they should look like stroke/edge detectors
 
 ### Resources
 - **3Blue1Brown "Neural Networks"** (YouTube, 4 videos) — the best visual introduction to neural networks and backpropagation
@@ -267,15 +267,15 @@
   - Reproducibility: set random seeds, log hyperparameters
 
 ### Exercises
-1. Compute by hand: for a 32×32 input with a 3×3 kernel, stride 1, padding 1 — what's the output size? Repeat for stride 2, no padding.
-2. Build a small CNN in PyTorch for CIFAR-10 (3 conv layers + pooling + FC head); train it and report validation accuracy
-3. Add dropout (0.5) after FC layers; compare validation accuracy with and without
-4. Add batch normalization after each conv layer; observe that you can increase the learning rate without divergence
-5. Train the same CNN with SGD (momentum=0.9) vs Adam; plot both training curves — note Adam converges faster initially
-6. Implement a cosine annealing learning rate schedule; compare final accuracy vs constant LR
-7. Fine-tune a pretrained ResNet-18 on a small dataset (e.g., CIFAR-10 or a custom 5-class dataset from Kaggle); compare accuracy vs training from scratch
-8. Implement the "overfit one batch" sanity check: take 1 mini-batch, train until loss → 0; verify the model has capacity
-9. Add data augmentation (random horizontal flip, random crop) to your CIFAR-10 pipeline; measure the accuracy improvement
+- [ ] Compute by hand: for a 32×32 input with a 3×3 kernel, stride 1, padding 1 — what's the output size? Repeat for stride 2, no padding.
+- [ ] Build a small CNN in PyTorch for CIFAR-10 (3 conv layers + pooling + FC head); train it and report validation accuracy
+- [ ] Add dropout (0.5) after FC layers; compare validation accuracy with and without
+- [ ] Add batch normalization after each conv layer; observe that you can increase the learning rate without divergence
+- [ ] Train the same CNN with SGD (momentum=0.9) vs Adam; plot both training curves — note Adam converges faster initially
+- [ ] Implement a cosine annealing learning rate schedule; compare final accuracy vs constant LR
+- [ ] Fine-tune a pretrained ResNet-18 on a small dataset (e.g., CIFAR-10 or a custom 5-class dataset from Kaggle); compare accuracy vs training from scratch
+- [ ] Implement the "overfit one batch" sanity check: take 1 mini-batch, train until loss → 0; verify the model has capacity
+- [ ] Add data augmentation (random horizontal flip, random crop) to your CIFAR-10 pipeline; measure the accuracy improvement
 
 ### Resources
 - **Stanford CS231n: Convolutional Neural Networks** — http://cs231n.github.io/convolutional-networks/ — the best written explanation of CNNs
@@ -315,21 +315,21 @@
   - When to use what: linear models (interpretable, fast, good baseline), trees/ensembles (tabular data king), neural networks (images, sequences, large data)
 
 ### Exercises
-1. Load a high-dimensional dataset (e.g., sklearn's digits dataset, 64 features); run PCA and plot explained variance ratio — pick the knee point
-2. Visualize the digits dataset in 2D using PCA (first 2 components); color by digit label — observe cluster structure
-3. Run t-SNE on the same dataset; compare the 2D visualization to PCA — note t-SNE separates clusters better but distances are not meaningful
-4. Implement K-means from scratch: random initialization → assign → update → repeat until convergence
-5. Run your K-means on 2D synthetic data (blobs); plot the cluster assignments and centroids at each iteration
-6. Implement the elbow method and silhouette score; use them to pick K on a dataset where you don't know the true number of clusters
-7. Compare your K-means against `sklearn.cluster.KMeans` — verify similar results
-8. Build an end-to-end ML pipeline on a real dataset (e.g., Kaggle's House Prices or Titanic):
-   - Load and explore data (EDA: distributions, missing values, correlations)
-   - Preprocess: handle missing values, encode categoricals, scale numerics
-   - Engineer 2–3 features based on domain intuition
-   - Train multiple models: linear regression/logistic regression, random forest, gradient boosting
-   - Evaluate all models with cross-validation; select the best
-   - Report final performance on the held-out test set
-9. Write a 1-page reflection: what do you understand now that you didn't in college? What's still fuzzy? What concepts connect to the gaze estimation project?
+- [ ] Load a high-dimensional dataset (e.g., sklearn's digits dataset, 64 features); run PCA and plot explained variance ratio — pick the knee point
+- [ ] Visualize the digits dataset in 2D using PCA (first 2 components); color by digit label — observe cluster structure
+- [ ] Run t-SNE on the same dataset; compare the 2D visualization to PCA — note t-SNE separates clusters better but distances are not meaningful
+- [ ] Implement K-means from scratch: random initialization → assign → update → repeat until convergence
+- [ ] Run your K-means on 2D synthetic data (blobs); plot the cluster assignments and centroids at each iteration
+- [ ] Implement the elbow method and silhouette score; use them to pick K on a dataset where you don't know the true number of clusters
+- [ ] Compare your K-means against `sklearn.cluster.KMeans` — verify similar results
+- [ ] Build an end-to-end ML pipeline on a real dataset (e.g., Kaggle's House Prices or Titanic):
+   - [ ] Load and explore data (EDA: distributions, missing values, correlations)
+   - [ ] Preprocess: handle missing values, encode categoricals, scale numerics
+   - [ ] Engineer 2–3 features based on domain intuition
+   - [ ] Train multiple models: linear regression/logistic regression, random forest, gradient boosting
+   - [ ] Evaluate all models with cross-validation; select the best
+   - [ ] Report final performance on the held-out test set
+- [ ] Write a 1-page reflection: what do you understand now that you didn't in college? What's still fuzzy? What concepts connect to the gaze estimation project?
 
 ### Resources
 - **StatQuest: PCA** (YouTube, main idea + step by step) — best visual explanation
