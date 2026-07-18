@@ -22,7 +22,7 @@
   - Maximum likelihood estimation (MLE) — connects to loss functions later
 
 ### Exercises
-- [ ] Implement matrix multiplication from scratch in NumPy, then compare with `np.matmul`
+- [x] Implement matrix multiplication from scratch in NumPy, then compare with `np.matmul`
 - [x] Compute gradients by hand for `f(x,y) = 3x²y + y³`, verify with a numerical gradient checker: `(f(x+h) - f(x-h)) / 2h`
 - [ ] Implement a numerical gradient checker function that works for any scalar function
 - [ ] Derive the posterior for a coin-flip problem using Bayes' theorem (prior = Beta(2,2), observe 7 heads in 10 flips)
