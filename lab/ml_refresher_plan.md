@@ -62,13 +62,13 @@
   - How polynomial degree controls this tradeoff
 
 ### Exercises
-- [ ] Generate synthetic data: `y = 3x + 7 + noise`; implement linear regression with batch gradient descent from scratch (no sklearn)
-- [ ] Plot the loss curve over iterations; try learning rates of 0.0001, 0.01, 0.1, and 1.0 — observe convergence, slow convergence, and divergence
-- [ ] Implement the normal equation; verify it gives the same weights as gradient descent
-- [ ] Implement mini-batch gradient descent (batch size 32); compare convergence speed vs batch GD
-- [ ] Generate polynomial data: `y = 0.5x³ - 2x² + x + noise`; fit polynomials of degree 1, 3, 5, 9, 15 — plot training vs validation error for each degree
-- [ ] Implement standardization from scratch; show that gradient descent converges faster on standardized features
-- [ ] Compare your implementation against `sklearn.linear_model.LinearRegression` — verify identical results
+- [x] Generate synthetic data: `y = 3x + 7 + noise`; implement linear regression with batch gradient descent from scratch (no sklearn)
+- [x] Plot the loss curve over iterations; try learning rates of 0.0001, 0.01, 0.1, and 1.0 — observe convergence, slow convergence, and divergence
+- [x] Implement the normal equation; verify it gives the same weights as gradient descent
+- [x] Implement mini-batch gradient descent (batch size 32); compare convergence speed vs batch GD
+- [x] Generate polynomial data: `y = 0.5x³ - 2x² + x + noise`; fit polynomials of degree 1, 3, 5, 9, 15 — plot training vs validation error for each degree
+- [x] Implement standardization from scratch; show that gradient descent converges faster on standardized features
+- [x] Compare your implementation against `sklearn.linear_model.LinearRegression` — verify identical results
 
 ### Resources
 - **Andrew Ng's Machine Learning Specialization** (Coursera) — Week 1–2 covers linear regression and gradient descent with excellent visual explanations
