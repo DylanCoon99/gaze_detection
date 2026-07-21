@@ -108,6 +108,7 @@
   - One-vs-rest vs softmax approaches
 
 ### Exercises
+- [ ] NumPy fundamentals: array creation, indexing, broadcasting, matrix ops, axis aggregations, reshaping, random/practical patterns
 - [ ] Implement the sigmoid function; plot it and verify it approaches 0 and 1 at extremes
 - [ ] Implement binary cross-entropy loss from scratch; compute it for a few example predictions
 - [ ] Derive the gradient of BCE loss w.r.t. weights on paper, then implement logistic regression with gradient descent
