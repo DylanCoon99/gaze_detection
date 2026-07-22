@@ -117,6 +117,8 @@
 - [ ] Implement ROC curve plotting from scratch: vary threshold from 0 to 1, compute TPR/FPR at each point, plot, and compute AUC using the trapezoidal rule
 - [ ] Implement softmax and categorical cross-entropy; train a multiclass logistic regression on a 3-class dataset
 - [ ] Compare your implementation against `sklearn.linear_model.LogisticRegression`
+- [ ] Floating point behavior: precision loss, overflow/underflow, safe sigmoid, FP32 vs FP16 vs FP64 memory and precision tradeoffs
+- [ ] FLOP counting: dot products, matrix multiplies, FC layers, conv layers, depthwise separable conv savings
 
 ### Resources
 - **Andrew Ng's Machine Learning Specialization** (Coursera) — Week 3 covers logistic regression and classification
