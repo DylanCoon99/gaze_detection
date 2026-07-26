@@ -109,16 +109,16 @@
 
 ### Exercises
 - [x] NumPy fundamentals: array creation, indexing, broadcasting, matrix ops, axis aggregations, reshaping, random/practical patterns
-- [ ] Implement the sigmoid function; plot it and verify it approaches 0 and 1 at extremes
-- [ ] Implement binary cross-entropy loss from scratch; compute it for a few example predictions
-- [ ] Derive the gradient of BCE loss w.r.t. weights on paper, then implement logistic regression with gradient descent
-- [ ] Generate a 2D dataset (two Gaussian blobs with some overlap); train your logistic regression and plot the decision boundary
+- [x] Implement the sigmoid function; plot it and verify it approaches 0 and 1 at extremes
+- [x] Implement binary cross-entropy loss from scratch; compute it for a few example predictions
+- [x] Derive the gradient of BCE loss w.r.t. weights on paper, then implement logistic regression with gradient descent
+- [x] Generate a 2D dataset (two Gaussian blobs with some overlap); train your logistic regression and plot the decision boundary
 - [ ] Create an imbalanced dataset (95% class 0, 5% class 1); train a model and compute accuracy, precision, recall, and F1 — observe why accuracy is misleading
 - [ ] Implement ROC curve plotting from scratch: vary threshold from 0 to 1, compute TPR/FPR at each point, plot, and compute AUC using the trapezoidal rule
 - [ ] Implement softmax and categorical cross-entropy; train a multiclass logistic regression on a 3-class dataset
 - [ ] Compare your implementation against `sklearn.linear_model.LogisticRegression`
-- [ ] Floating point behavior: precision loss, overflow/underflow, safe sigmoid, FP32 vs FP16 vs FP64 memory and precision tradeoffs
-- [ ] FLOP counting: dot products, matrix multiplies, FC layers, conv layers, depthwise separable conv savings
+- [x] Floating point behavior: precision loss, overflow/underflow, safe sigmoid, FP32 vs FP16 vs FP64 memory and precision tradeoffs
+- [x] FLOP counting: dot products, matrix multiplies, FC layers, conv layers, depthwise separable conv savings
 
 ### Resources
 - **Andrew Ng's Machine Learning Specialization** (Coursera) — Week 3 covers logistic regression and classification
