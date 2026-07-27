@@ -162,14 +162,10 @@
   - Stratified K-fold: preserve class proportions in each fold
 
 ### Exercises
-- [ ] Train a decision tree on the Iris dataset; visualize it with `sklearn.tree.plot_tree`; manually trace a prediction through the tree
-- [ ] Train trees of depth 1, 3, 5, 10, None (unlimited); plot training vs validation accuracy for each — observe overfitting
-- [ ] Train a random forest (100 trees) on the same data; compare accuracy and variance vs a single tree
-- [ ] Train gradient boosting (XGBoost or sklearn's `GradientBoostingClassifier`) on a tabular dataset (Titanic or housing prices); tune learning rate and n_estimators
-- [ ] Compare single tree vs random forest vs gradient boosting on the same dataset with the same features — tabulate results
-- [ ] Go back to your Day 2 linear regression; add L2 regularization to the loss and gradient; retrain and plot how coefficients shrink as λ increases
-- [ ] Implement L1 regularization (use subgradient or proximal gradient); observe that some weights go exactly to zero
-- [ ] Implement k-fold cross-validation manually (split indices, loop, aggregate scores); compare against `sklearn.model_selection.cross_val_score`
+- [ ] Train a decision tree on Iris; visualize with `plot_tree`; train at depths 1, 3, 5, 10, None and plot training vs validation accuracy
+- [ ] Compare single tree vs random forest vs gradient boosting on the wine dataset — tabulate results
+- [ ] Implement L2 regularization from scratch; plot how coefficients shrink as λ increases
+- [ ] Implement k-fold cross-validation manually; compare against `sklearn.model_selection.cross_val_score`
 - [ ] Use cross-validation to select the best regularization strength λ for Ridge regression
 
 ### Resources
