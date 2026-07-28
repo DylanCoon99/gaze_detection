@@ -66,11 +66,11 @@ Days 4–6 focus on what's needed for the project: neural networks, PyTorch, CNN
   - Training loop pattern: forward → loss → backward → step → zero_grad
 
 ### Exercises
-- [ ] Implement a 2-layer neural network from scratch (NumPy): forward pass + backprop on XOR
-- [ ] Swap activation functions (sigmoid vs ReLU); plot training loss curves — observe vanishing gradient effect
-- [ ] Reimplement the same network in PyTorch using `nn.Module`; compare the code
-- [ ] Train a feedforward network on MNIST in PyTorch (2 hidden layers, 128 units); aim for >95% accuracy
-- [ ] Implement the "overfit one batch" sanity check before full training
+- [x] Implement a 2-layer neural network from scratch (NumPy): forward pass + backprop on XOR
+- [x] Swap activation functions (sigmoid vs ReLU); plot training loss curves — observe vanishing gradient effect
+- [x] Reimplement the same network in PyTorch using `nn.Module`; compare the code
+- [x] Train a feedforward network on MNIST in PyTorch (2 hidden layers, 128 units); aim for >95% accuracy
+- [x] Implement the "overfit one batch" sanity check before full training
 
 ### Resources
 - **3Blue1Brown "Neural Networks"** (YouTube, 4 videos) — best visual intro to neural networks and backpropagation
