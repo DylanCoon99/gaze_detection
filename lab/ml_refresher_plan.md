@@ -101,11 +101,11 @@ Days 4–6 focus on what's needed for the project: neural networks, PyTorch, CNN
   - Learning rate schedulers: cosine annealing
 
 ### Exercises
-- [ ] Build a CNN in PyTorch for CIFAR-10 (3 conv layers + pooling + FC head); train and report accuracy
-- [ ] Add batch norm and dropout; measure the effect on validation accuracy
-- [ ] Train with SGD vs Adam; plot both training curves
-- [ ] Fine-tune a pretrained MobileNetV2 on a small dataset; compare accuracy vs training from scratch
-- [ ] Add data augmentation (random flip, crop, color jitter); measure accuracy improvement
+- [x] Build a CNN in PyTorch for CIFAR-10 (3 conv layers + pooling + FC head); train and report accuracy
+- [x] Add batch norm and dropout; measure the effect on validation accuracy
+- [x] Train with SGD vs Adam; plot both training curves
+- [x] Fine-tune a pretrained MobileNetV2 on a small dataset; compare accuracy vs training from scratch
+- [x] Add data augmentation (random flip, crop, color jitter); measure accuracy improvement
 
 ### Resources
 - **Stanford CS231n: Convolutional Neural Networks** — http://cs231n.github.io/convolutional-networks/
