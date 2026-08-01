@@ -130,11 +130,11 @@ Days 4–6 focus on what's needed for the project: neural networks, PyTorch, CNN
   - PyTorch → ONNX export as a deployment sanity check
 
 ### Exercises
-- [ ] Load a subset of 300W-LP (or use a face dataset); write a PyTorch Dataset and DataLoader
-- [ ] Attach a regression head (2 outputs: yaw, pitch) to a frozen MobileNetV2 backbone — this is Model 2
-- [ ] Train on face data with MSE loss; report MAE on a validation split
-- [ ] Profile the model with `torchinfo`; verify parameter count and FLOP estimates
-- [ ] Export the trained model to ONNX; reload and verify predictions match
+- [x] Load a subset of 300W-LP (or use a face dataset); write a PyTorch Dataset and DataLoader
+- [x] Attach a regression head (2 outputs: yaw, pitch) to a frozen MobileNetV2 backbone — this is Model 2
+- [x] Train on face data with MSE loss; report MAE on a validation split
+- [x] Profile the model with `torchinfo`; verify parameter count and FLOP estimates
+- [x] Export the trained model to ONNX; reload and verify predictions match
 
 ### Resources
 - **PyTorch: Custom Datasets** — https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
