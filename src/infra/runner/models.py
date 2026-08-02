@@ -13,8 +13,23 @@ input_resolution: [224, 224]
 quantization: none
 preprocessing: standard_crop_v2 
 
-
 '''
+
+
+def get_model(config: Config):
+
+	# the config determines which model we instantiate
+
+	models = {
+		"torch": TorchModel,
+		# can add more for each runtime
+	}
+	model = models.get(config.runtime)
+	if model:
+		return model()
+	raise ValueError(f"Unknown runtime {config.runtime}")
+
+	
 
 class BaseModel(ABC):
 
@@ -48,19 +63,25 @@ class BaseModel(ABC):
 
 class TorchModel(BaseModel):
 
-	def load():
+	def load(self):
+		# configure the model based on self.config
+		
 
 		return
 
-	def warmup(n: int):
+	def warmup(self, n: int):
+		# perform n inferences
+		# warms up the CPU cache
+		# first inferences can be slow so we throw these away
+
 
 		return
 
-	def infer(batch):
+	def infer(self, batch):
 
 		return
 
-	def teardown():
+	def teardown(self):
 
 		return
 

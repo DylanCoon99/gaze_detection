@@ -40,7 +40,7 @@ class Config:
 
 		# validate the yaml is the correct format
 
-		return cls.from_dict(config)
+		 return cls.from_dict(config)
 
 
 

@@ -6,8 +6,6 @@ from errors import MalformedConfig
 # Testing the config yaml parsing
 
 
-
-
 def main():
 
 	file_path = "/Users/Dylan/Documents/gaze_detection/src/infra/runner/test_config_in.yaml"
