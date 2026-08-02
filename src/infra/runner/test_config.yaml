@@ -1,0 +1,6 @@
+name: mobilenet_v2_fp32
+weights: models/mnv2_fp32.pth
+runtime: torch
+input_resolution: [224, 224]
+quantization: "none"
+preprocessing: standard_crop_v2

@@ -1,0 +1,3 @@
+name: mobilenet_v2_fp32
+weights: models/mnv2_fp32.pth
+runtime: torch
