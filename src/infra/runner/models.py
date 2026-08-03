@@ -84,27 +84,27 @@ class TorchModel(BaseModel):
 		# first inferences can be slow so we throw these away
 
 		# saves time
-		torch.no_grad()
+		with torch.no_grad():
 
-		# create a dummy tensor of size (1, 3, H, W)
-		H, W = self.config.input_resolution
-		dummy_tensor = torch.rand(1, 3, H, W)
+			# create a dummy tensor of size (1, 3, H, W)
+			H, W = self.config.input_resolution
+			dummy_tensor = torch.rand(1, 3, H, W)
 
-		dummy_tensor = dummy_tensor.to(self.device)
+			dummy_tensor = dummy_tensor.to(self.device)
 
-		# perform inference on the tensor n times
-		for i in range(n):
-			self.model(dummy_tensor)
+			# perform inference on the tensor n times
+			for i in range(n):
+				self.model(dummy_tensor)
 
 		return
 
 	def infer(self, batch):
 		# perform inference on the batch
-		torch.no_grad()
+		with torch.no_grad():
 
-		batch = batch.to(self.device)
+			batch = batch.to(self.device)
 
-		return self.model(batch)
+			return self.model(batch)
 
 	def teardown(self):
 
