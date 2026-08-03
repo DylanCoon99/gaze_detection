@@ -1,7 +1,6 @@
-
 from abc import ABC, abstractmethod
 from config import Config
-
+import torch
 
 '''
 
@@ -16,25 +15,14 @@ preprocessing: standard_crop_v2
 '''
 
 
-def get_model(config: Config):
-
-	# the config determines which model we instantiate
-
-	models = {
-		"torch": TorchModel,
-		# can add more for each runtime
-	}
-	model = models.get(config.runtime)
-	if model:
-		return model()
-	raise ValueError(f"Unknown runtime {config.runtime}")
-
 	
 
 class BaseModel(ABC):
 
 	def __init__(self, config: Config):
 		self.config = config
+		self.model = None
+		self.transform = None
 		return
 
 
@@ -64,8 +52,14 @@ class BaseModel(ABC):
 class TorchModel(BaseModel):
 
 	def load(self):
-		# configure the model based on self.config
-		
+		# configure the model with pytorch runtime
+
+		# MobileNetV2 FP32, ResNet-18 FP32, MobileViT-small
+
+		# load the weights
+		self.model = torch.jit.load(self.config.weights)
+
+		self.model.eval()
 
 		return
 
@@ -78,10 +72,13 @@ class TorchModel(BaseModel):
 		return
 
 	def infer(self, batch):
+		# perform inference on the batch
 
 		return
 
 	def teardown(self):
+
+
 
 		return
 
