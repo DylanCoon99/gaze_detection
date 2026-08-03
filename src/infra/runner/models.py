@@ -62,6 +62,9 @@ class TorchModel(BaseModel):
 
 		self.model.eval()
 
+
+		# think about this later
+		'''
 		# for running on mac
 		if torch.backends.mps.is_available():
 		    self.device = torch.device("mps")
@@ -70,7 +73,8 @@ class TorchModel(BaseModel):
 		    self.device = torch.device("cpu")
 		    print("MPS not available. Using CPU.")
 
-		model.to(self.device)
+		self.model.to(self.device)
+		'''
 
 		return
 
@@ -79,23 +83,28 @@ class TorchModel(BaseModel):
 		# warms up the CPU cache
 		# first inferences can be slow so we throw these away
 
+		# saves time
+		torch.no_grad()
+
 		# create a dummy tensor of size (1, 3, H, W)
 		H, W = self.config.input_resolution
 		dummy_tensor = torch.rand(1, 3, H, W)
 
-		dummy_tensor.to(self.device)
+		dummy_tensor = dummy_tensor.to(self.device)
 
 		# perform inference on the tensor n times
 		for i in range(n):
-			model(dummy_tensor)
+			self.model(dummy_tensor)
 
 		return
 
 	def infer(self, batch):
 		# perform inference on the batch
-		batch.to(self.device)
+		torch.no_grad()
 
-		return model(batch)
+		batch = batch.to(self.device)
+
+		return self.model(batch)
 
 	def teardown(self):
 
