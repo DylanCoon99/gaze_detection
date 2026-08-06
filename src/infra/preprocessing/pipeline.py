@@ -1,5 +1,8 @@
 from typing import Any, Dict
-
+from dataclasses import dataclass, field
+import yaml
+import cv2
+import mediapipe as mp
 
 '''
 
@@ -10,8 +13,12 @@ Config stores this:
 '''
 
 
+@dataclass
 class Detection:
-	pass
+	x: float
+	y: float
+	width: float
+	height: float
 
 
 
@@ -73,13 +80,22 @@ class Pipeline:
 	def __init__(self, config: PipelineConfig):
 		# initialize the config
 		self.config = config
+		self.mp_face_detection = mp.solutions.face_detection
+		#self.mp_drawing = mp.solutions.drawing_utils
 
-	def detect(self):
+	def detect(self, image):
 		'''
 		takes a raw image, runs a face detector (like MediaPipe BlazeFace), and 
 		returns a bounding box: the x, y, width, height of where the face is in the
 		image. 
 		'''
+
+		# pick a face detector
+
+
+		# need to determine if detect can return multiple detections per image
+
+
 
 		return
 

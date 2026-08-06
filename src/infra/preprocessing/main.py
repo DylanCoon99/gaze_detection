@@ -2,22 +2,15 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
 def main():
 
 	# entry point for the pipeline
 
+	# load a config file to a config object
 
+	# instantiate a pipeline with the config
 
+	# run the pipeline
 
 	return
 
