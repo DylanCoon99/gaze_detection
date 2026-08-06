@@ -10,6 +10,12 @@ Config stores this:
 '''
 
 
+class Detection:
+	pass
+
+
+
+
 # Define the config here
 
 @dataclass(frozen=True)
@@ -68,28 +74,49 @@ class Pipeline:
 		# initialize the config
 		self.config = config
 
-
-	def crop(self):
+	def detect(self):
+		'''
+		takes a raw image, runs a face detector (like MediaPipe BlazeFace), and 
+		returns a bounding box: the x, y, width, height of where the face is in the
+		image. 
+		'''
 
 		return
 
 
-	def detect(self):
+	def crop(self, detection: Detection):
+		'''
+		takes the image and the bounding box from detect, expands the box by the margin 
+		percentage, clips it to stay within image bounds, cuts out that region, and 
+		resizes it to the target resolution (e.g. 224x224). Returns the cropped face image.
+		'''
 
 		return
 
 
 	def labels(self):
+		'''
+		reads the .mat file for a given image and extracts yaw and pitch in degrees. 
+		I already wrote this logic in my day 6 dataset class. This just isolates it 
+		so the pipeline can save the labels alongside the crops.
+		'''
+
 
 		return
 
 
 	def run(self):
+		'''
+		The pipeline orchestrates them: for each image in the input directory, run
+		detect → crop → labels → save the crop and its label to the output directory.
+		'''
 
-		# perform every step in the pipeline
-		self.crop()
-		self.detect()
-		self.labels()
+		# iterate over all images in the input directory
+
+			# perform every step in the pipeline
+		detection = self.detect()
+		self.crop(detection)
+		self.labels() # pass image and returns the labels for that image
 
 		return
 
