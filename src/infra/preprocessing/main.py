@@ -1,5 +1,6 @@
 # End-to-end pipeline — runs detect + crop over a dataset directory and saves output
-from pipeline import PipelineConfig, Pipeline
+from pipeline import Pipeline
+from config import PipelineConfig
 import argparse
 import logging
 

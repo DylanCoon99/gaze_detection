@@ -9,17 +9,11 @@ from mediapipe.tasks.python import vision
 from pathlib import Path
 from PIL import Image
 import numpy as np
+from config import PipelineConfig
 import logging
 
 logger = logging.getLogger("preprocessing")
 
-'''
-
-Config stores this:
-	(input directory, output directory, target resolution, etc.)
-
-
-'''
 
 
 @dataclass
@@ -35,61 +29,6 @@ class Label:
 	pitch: float
 	yaw: float
 
-
-
-# Define the pipeline config here
-@dataclass(frozen=True)
-class PipelineConfig:
-	input_directory: str
-	output_directory: str
-	margin: float
-	confidence: float
-	detection_model: str
-	input_resolution: list[int] = field(default_factory=list)
-
-
-	@classmethod
-	def from_path(cls, yaml_path: str):
-
-		try:
-			with open(yaml_path, "r") as file:
-				# loads the yaml to a dictionary
-				config = yaml.safe_load(file)
-
-		except FileNotFoundError:
-			raise FileNotFoundError(f"File: {yaml_path} not found!")
-
-		# validate the yaml is the correct format
-
-		return cls.from_dict(config)
-
-
-
-	@classmethod
-	def from_dict(cls, yaml_dict):
-		try:
-
-			# validate the yaml
-			# need to check if the values are none
-
-			input_directory  = yaml_dict["input_directory"]
-			output_directory = yaml_dict["output_directory"]
-			margin           = yaml_dict["margin"]
-			confidence       = yaml_dict["confidence"]
-			detection_model  = yaml_dict["detection_model"]
-			input_resolution = yaml_dict["input_resolution"]
-
-			return cls(
-				input_directory=input_directory, 
-				output_directory=output_directory,
-				margin=margin,
-				confidence=confidence,
-				detection_model=detection_model,
-				input_resolution=input_resolution
-			)
-		
-		except KeyError as e:
-			raise MalformedConfig(error_msg=e)
 
 
 
@@ -118,11 +57,15 @@ class Pipeline:
 
 		detection_result = self.detector.detect(image)
 
-		logger.info(f"detection result: {detection_result}")
+		if detection_result.detections:
+			x = detection_result.detections[0].bounding_box.origin_x
+			y = detection_result.detections[0].bounding_box.origin_y
+			width = detection_result.detections[0].bounding_box.width
+			height = detection_result.detections[0].bounding_box.height
 
-		# TODO: construct the detection result
+			return Detection(x=x, y=y, width=width, height=height)
 
-		return
+		return None
 
 
 	def crop(self, img_file, detection: Detection):
@@ -131,6 +74,8 @@ class Pipeline:
 		percentage, clips it to stay within image bounds, cuts out that region, and 
 		resizes it to the target resolution (e.g. 224x224). Returns the cropped face image.
 		'''
+
+		
 
 		return None
 
@@ -142,8 +87,8 @@ class Pipeline:
 		so the pipeline can save the labels alongside the crops.
 		'''
 
-		mat = sio.loadmat(mat_file)                                                                                                                          
-		pose = mat['Pose_Para'][0]                                                                                                                                   
+		mat = sio.loadmat(mat_file)
+		pose = mat['Pose_Para'][0]
 		pitch, yaw = pose[0], pose[1]
 		pitch = pitch * 180 / np.pi
 		yaw = yaw * 180 / np.pi
@@ -172,6 +117,10 @@ class Pipeline:
 			detection = self.detect(img_file)
 			cropped_img = self.crop(img_file, detection)
 			label = self.labels(mat_file)
+
+			logger.info(f"Detection: {detection}")
+			#logger.info(f"Cropped Image: {cropped_img}")
+			logger.info(f"Label: {label}")
 
 			# TODO: save the crop and the label to the output directory
 			output_directory = self.config.output_directory
