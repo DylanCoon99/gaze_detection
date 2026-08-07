@@ -1,0 +1,6 @@
+input_directory: /Users/Dylan/Documents/gaze_detection/src/infra/preprocessing/test_input
+output_directory: /Users/Dylan/Documents/gaze_detection/src/infra/preprocessing/test_output
+margin: .2
+confidence: .5
+detection_model: blaze_face_full_range.tflite
+input_resolution: [224, 224]

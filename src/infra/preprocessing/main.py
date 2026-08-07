@@ -1,16 +1,32 @@
 # End-to-end pipeline — runs detect + crop over a dataset directory and saves output
+from pipeline import PipelineConfig, Pipeline
+import argparse
+import logging
 
+
+logger = logging.getLogger("preprocessing")
 
 
 def main():
 
-	# entry point for the pipeline
+	parser = argparse.ArgumentParser(description="Run the preprocessing pipeline")
+	parser.add_argument("--config", type=str, default="test_pipeline_config.yaml", help="Path to pipeline config YAML")
+	parser.add_argument("--verbose", action="store_true", help="Enable debug logging")
+	args = parser.parse_args()
 
-	# load a config file to a config object
+	# configure logging
+	level = logging.DEBUG if args.verbose else logging.WARNING
+	logging.basicConfig(
+		level=level,
+		format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+	)
 
-	# instantiate a pipeline with the config
+	config = PipelineConfig.from_path(args.config)
 
-	# run the pipeline
+	my_pipeline = Pipeline(config)
+
+	my_pipeline.run()
+
 
 	return
 
