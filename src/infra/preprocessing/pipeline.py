@@ -3,6 +3,8 @@ from dataclasses import dataclass, field
 import yaml
 import cv2
 import mediapipe as mp
+from pathlib import Path
+
 
 '''
 
@@ -20,6 +22,12 @@ class Detection:
 	width: float
 	height: float
 
+
+
+@dataclass
+class Label:
+	pitch: float
+	yaw: float
 
 
 
@@ -81,7 +89,6 @@ class Pipeline:
 		# initialize the config
 		self.config = config
 		self.mp_face_detection = mp.solutions.face_detection
-		#self.mp_drawing = mp.solutions.drawing_utils
 
 	def detect(self, image):
 		'''
@@ -110,15 +117,20 @@ class Pipeline:
 		return
 
 
-	def labels(self):
+	def labels(self, mat_file) -> Label:
 		'''
 		reads the .mat file for a given image and extracts yaw and pitch in degrees. 
 		I already wrote this logic in my day 6 dataset class. This just isolates it 
 		so the pipeline can save the labels alongside the crops.
 		'''
 
+		mat = sio.loadmat(mat_file)                                                                                                                          
+        pose = mat['Pose_Para'][0]                                                                                                                                   
+        pitch, yaw = pose[0], pose[1]
+        pitch = pitch * 180 / np.pi
+        yaw = yaw * 180 / np.pi
 
-		return
+		return Label(pitch=pitch, yaw=yaw)
 
 
 	def run(self):
@@ -127,12 +139,27 @@ class Pipeline:
 		detect → crop → labels → save the crop and its label to the output directory.
 		'''
 
-		# iterate over all images in the input directory
+		path = Path(self.config.input_directory)
 
-			# perform every step in the pipeline
-		detection = self.detect()
-		self.crop(detection)
-		self.labels() # pass image and returns the labels for that image
+		# iterate over all labels in the input directory
+		for mat_file in sorted(path.glob("*.mat")):
+
+			# find corresponding image file
+            img_file = mat_file.with_suffix(".jpg")
+            if not img_file.exists():
+            	# if image file does not exist -> skip this .mat file
+                continue
+            
+            # perform every step in the pipeline
+			detection = self.detect(img_file)
+			cropped_img = self.crop(detection)
+   			label = self.labels(mat_file)
+
+            # TODO: save the crop and the label to the output directory
+            output_directory = self.config.output_directory
+            
+
+
 
 		return
 
