@@ -1,6 +1,7 @@
 # Accuracy metrics — MAE, p50/p95/p99 angular error
+from dataclasses import dataclass
+
 import numpy as np
-from dataclasses import dataclass, field
 
 
 '''

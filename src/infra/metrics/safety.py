@@ -1,6 +1,7 @@
 # Safety metrics — eyes-off-road FPR/FNR given a gaze-cone threshold
+from dataclasses import dataclass
+
 import numpy as np
-from dataclasses import dataclass, field
 from sklearn.metrics import confusion_matrix
 
 '''
@@ -23,13 +24,14 @@ def get_safety(y_pred, y_true, threshold_angle=15) -> Safety:
 	# compaare y_true with the threshold
 	true_off_road = (np.abs(y_true[:, 0]) > threshold_angle) | (np.abs(y_true[:, 1]) > threshold_angle)
 	# false positive: model says looking away but driver isn't
-	tn, fp, fn, tp = confusion_matrix(true_off_road, pred_off_road).ravel()
+	tn, fp, fn, tp = confusion_matrix(true_off_road, pred_off_road, labels=[False, True]).ravel()
+
+
 
 	# Calculate FPR
-	fpr = fp / (fp + tn)
+	fpr = (fp / (fp + tn)) if (fp + tn != 0) else 0.0
 
 	# false negative: model says not looking away but driver is
-	fnr = fn / (tp + fn)
-
+	fnr = (fn / (tp + fn)) if (tp + fn != 0) else 0.0
 
 	return Safety(fpr=fpr, fnr=fnr)

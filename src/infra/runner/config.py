@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
-from errors import MalformedConfig
+
 import yaml
+
+from errors import MalformedConfig
 
 
 '''

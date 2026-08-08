@@ -1,8 +1,9 @@
 # End-to-end pipeline — runs detect + crop over a dataset directory and saves output
-from pipeline import Pipeline
-from config import PipelineConfig
 import argparse
 import logging
+
+from config import PipelineConfig
+from pipeline import Pipeline
 
 
 logger = logging.getLogger("preprocessing")

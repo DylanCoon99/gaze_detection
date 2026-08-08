@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
-from config import Config
+
 import torch
+
+from config import Config
 
 '''
 

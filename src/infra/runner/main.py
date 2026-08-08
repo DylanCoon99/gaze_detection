@@ -1,6 +1,7 @@
 # Model Evaluation Runner Implementation
 from config import Config
 from errors import MalformedConfig
+from models import TorchModel
 
 
 # Testing the config yaml parsing
