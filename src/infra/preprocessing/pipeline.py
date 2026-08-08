@@ -70,14 +70,36 @@ class Pipeline:
 
 	def crop(self, img_file, detection: Detection):
 		'''
-		TODO: takes the image and the bounding box from detect, expands the box by the margin 
-		percentage, clips it to stay within image bounds, cuts out that region, and 
+		Takes the image and the bounding box from detect, expands the box by the margin
+		percentage, clips it to stay within image bounds, cuts out that region, and
 		resizes it to the target resolution (e.g. 224x224). Returns the cropped face image.
 		'''
 
-		
+		# open the image
+		image = Image.open(img_file)
+		img_width, img_height = image.size
 
-		return None
+		# expand the bounding box by margin on each side
+		margin_w = detection.width * self.config.margin
+		margin_h = detection.height * self.config.margin
+
+		x1 = detection.x - margin_w
+		y1 = detection.y - margin_h
+		x2 = detection.x + detection.width + margin_w
+		y2 = detection.y + detection.height + margin_h
+
+		# clip to image bounds
+		x1 = max(0, x1)
+		y1 = max(0, y1)
+		x2 = min(img_width, x2)
+		y2 = min(img_height, y2)
+
+		# crop and resize
+		cropped = image.crop((x1, y1, x2, y2))
+		H, W = self.config.input_resolution
+		cropped = cropped.resize((W, H))
+
+		return cropped
 
 
 	def labels(self, mat_file) -> Label:
@@ -119,12 +141,12 @@ class Pipeline:
 			label = self.labels(mat_file)
 
 			logger.info(f"Detection: {detection}")
-			#logger.info(f"Cropped Image: {cropped_img}")
+			logger.info(f"Cropped Image: {cropped_img}")
 			logger.info(f"Label: {label}")
 
 			# TODO: save the crop and the label to the output directory
 			output_directory = self.config.output_directory
-
+			
 
 
 
