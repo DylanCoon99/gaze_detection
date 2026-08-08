@@ -19,7 +19,7 @@ class Accuracy:
 
 
 
-def get_accuracy(y_pred, y_true):
+def get_accuracy(y_pred, y_true) -> Accuracy:
 	dif = np.abs(y_true - y_pred)
 	mae_yaw, mae_pitch = np.mean(dif, axis=0)
 	mae_combined = np.mean(dif)

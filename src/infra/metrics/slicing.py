@@ -8,7 +8,9 @@ but falls apart at extreme yaw."
 '''
 
 
+
+
 def get_slicing(y_pred, y_true, yaw_true):
 
 
-	return
+	return None

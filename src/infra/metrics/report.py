@@ -18,16 +18,14 @@ class Report:
 
 
 # needs to take predictions and labels as input; called by the runner
-def report(y_pred, y_true):
+def report(y_pred, y_true, threshold=15): # threshold should probably some from the model config or passed as an argument when the runner is ran
 
 	# call accuracy
 	accuracy = get_accuracy(y_pred, y_true)
 	# call safety
-
+	safety = get_safety(y_pred, y_true, threshold=threshold) 
 	# call slicing
-
-	# structure the Report object
-
+	
 	# return the Report object
 
 	return Report(accuracy=accuracy)
