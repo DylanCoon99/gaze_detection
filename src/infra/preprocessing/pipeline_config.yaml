@@ -1,0 +1,6 @@
+input_directory: /Volumes/T7/kaggle_datasets/datasets/maulidio16/300w-lp/versions/1/300W_LP/AFW
+output_directory: /Volumes/T7/preprocessed_crops/AFW
+margin: 0.2
+confidence: 0.5
+detection_model: blaze_face_full_range.tflite
+input_resolution: [224, 224]

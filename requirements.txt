@@ -1,0 +1,15 @@
+numpy
+torch
+torchvision
+opencv-python
+mediapipe
+Pillow
+PyYAML
+scipy
+matplotlib
+scikit-learn
+pytest
+onnxruntime
+torchinfo
+kagglehub
+dvc
