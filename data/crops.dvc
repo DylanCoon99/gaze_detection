@@ -1,0 +1,14 @@
+md5: 23c5ac76b2131d8c8cd13029693ab550
+frozen: true
+deps:
+- md5: fa4ef55bd009f792f139cbb268ea1a3f.dir
+  size: 33467526
+  nfiles: 4851
+  hash: md5
+  path: /Volumes/T7/preprocessed_crops/AFW
+outs:
+- md5: fa4ef55bd009f792f139cbb268ea1a3f.dir
+  size: 33467526
+  nfiles: 4851
+  hash: md5
+  path: crops
