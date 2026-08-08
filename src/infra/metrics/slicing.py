@@ -6,3 +6,9 @@ Takes predictions, ground truth, and the ground truth yaw values. Bins the sampl
 each bin, runs the accuracy metrics on just that subset. The output is a dict mapping each bin to its metrics. This is what reveals "the model is great overall
 but falls apart at extreme yaw."
 '''
+
+
+def get_slicing(y_pred, y_true, yaw_true):
+
+
+	return

@@ -7,3 +7,8 @@ whether the angle exceeds the threshold. Then compares the model's classificatio
 but driver isn't) and false negative rate (model says fine but driver is looking away). This is the metric that matters for a real product — false positives
 make drivers disable the system.
 '''
+
+def get_safety(y_pred, y_true, threshold_angle=15):
+
+
+	return
