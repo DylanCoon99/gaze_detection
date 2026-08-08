@@ -11,6 +11,8 @@ from PIL import Image
 import numpy as np
 from config import PipelineConfig
 import logging
+import csv
+import os
 
 logger = logging.getLogger("preprocessing")
 
@@ -124,31 +126,51 @@ class Pipeline:
 		detect → crop → labels → save the crop and its label to the output directory.
 		'''
 
-		path = Path(self.config.input_directory)
+		input_path = Path(self.config.input_directory)
+		output_path = Path(self.config.output_directory)
+		labels_path = output_path / "labels.csv"
 
-		# iterate over all labels in the input directory
-		for mat_file in sorted(path.glob("*.mat")):
+		mat_files = sorted(input_path.glob("*.mat"))
+		logger.info(f"Found {len(mat_files)} .mat files in {input_path}")
 
-			# find corresponding image file
-			img_file = mat_file.with_suffix(".jpg")
-			if not img_file.exists():
-				# if image file does not exist -> skip this .mat file
-				continue
+		processed = 0
+		skipped_no_image = 0
+		skipped_no_face = 0
 
-			# perform every step in the pipeline
-			detection = self.detect(img_file)
-			cropped_img = self.crop(img_file, detection)
-			label = self.labels(mat_file)
+		with open(labels_path, mode="w", newline="", encoding="utf-8") as file:
+			writer = csv.DictWriter(file, fieldnames=["filename", "yaw", "pitch"])
+			writer.writeheader()
 
-			logger.info(f"Detection: {detection}")
-			logger.info(f"Cropped Image: {cropped_img}")
-			logger.info(f"Label: {label}")
+			for mat_file in mat_files:
 
-			# TODO: save the crop and the label to the output directory
-			output_directory = self.config.output_directory
-			
+				# find corresponding image file
+				img_file = mat_file.with_suffix(".jpg")
+				if not img_file.exists():
+					skipped_no_image += 1
+					logger.debug(f"No image found for {mat_file.name}, skipping")
+					continue
 
+				# perform every step in the pipeline
+				detection = self.detect(img_file)
+				if not detection:
+					skipped_no_face += 1
+					logger.warning(f"No face detected in {img_file.name}, skipping")
+					continue
 
+				cropped_img = self.crop(img_file, detection)
+				label = self.labels(mat_file)
+
+				logger.debug(f"Detection: {detection}")
+				logger.debug(f"Label: {label}")
+
+				cropped_img.save(output_path / img_file.name)
+				writer.writerow({"filename": img_file.name, "yaw": label.yaw, "pitch": label.pitch})
+
+				processed += 1
+				if processed % 100 == 0:
+					logger.info(f"Processed {processed} images...")
+
+		logger.info(f"Pipeline complete: {processed} processed, {skipped_no_image} missing images, {skipped_no_face} no face detected")
 
 		return
 
