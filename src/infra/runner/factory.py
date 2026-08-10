@@ -1,6 +1,9 @@
-def get_model(config: Config):
+from config import Config
+from models import TorchModel
 
-	# the config determines which model we instantiate
+
+def get_model(config: Config):
+	"""Factory: maps config runtime to the correct model subclass."""
 
 	models = {
 		"torch": TorchModel,
@@ -9,4 +12,4 @@ def get_model(config: Config):
 	model = models.get(config.runtime)
 	if model:
 		return model(config)
-	raise ValueError(f"Unknown runtime {config.runtime}")
+	raise ValueError(f"Unknown runtime: {config.runtime}")

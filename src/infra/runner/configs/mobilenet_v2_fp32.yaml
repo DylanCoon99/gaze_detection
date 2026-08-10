@@ -1,0 +1,6 @@
+name: mobilenet_v2_fp32
+weights: /Volumes/T7/models/mobilenet_v2_fp32.pt
+runtime: torch
+input_resolution: [224, 224]
+quantization: "none"
+preprocessing: standard_imagenet
