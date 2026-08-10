@@ -1,0 +1,12 @@
+lab/
+data/
+.dvc/
+mlruns/
+**/*.db
+__pycache__/
+*.pyc
+.DS_Store
+.env
+*.ipynb
+src/infra/preprocessing/.env/
+src/infra/training/

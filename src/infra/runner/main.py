@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
+import yaml
 import torch
 import torchvision.io as tv_io
 import mlflow
@@ -20,6 +21,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "metrics"))
 from report import report
 
 logger = logging.getLogger("runner")
+
+
+def get_dataset_version(dvc_file: str) -> str:
+	"""Read the md5 hash from a .dvc file as the dataset version."""
+	try:
+		with open(dvc_file, "r") as f:
+			dvc_data = yaml.safe_load(f)
+		return dvc_data.get("md5", "unknown")
+	except FileNotFoundError:
+		return "unknown"
 
 
 def load_labels(labels_csv: str):
@@ -58,6 +69,7 @@ def main():
 	parser.add_argument("--data", type=str, required=True, help="Path to preprocessed crops directory (must contain labels.csv)")
 	parser.add_argument("--warmup", type=int, default=5, help="Number of warmup iterations")
 	parser.add_argument("--batch-size", type=int, default=32, help="Inference batch size")
+	parser.add_argument("--dataset-version", type=str, default=None, help="Dataset version identifier (e.g. DVC hash or tag)")
 	parser.add_argument("--threshold", type=float, default=15.0, help="Eyes-off-road threshold angle in degrees")
 	parser.add_argument("--verbose", action="store_true", help="Enable debug logging")
 	args = parser.parse_args()
@@ -136,6 +148,15 @@ def main():
 		mlflow.log_param("input_resolution", config.input_resolution)
 		mlflow.log_param("batch_size", args.batch_size)
 		mlflow.log_param("threshold_angle", args.threshold)
+		# auto-read DVC hash if no version provided
+		if args.dataset_version:
+			dataset_version = args.dataset_version
+		else:
+			# look for a .dvc file matching the data path
+			repo_root = Path(__file__).resolve().parent.parent.parent.parent
+			dvc_file = repo_root / "data" / "crops.dvc"
+			dataset_version = get_dataset_version(str(dvc_file))
+		mlflow.log_param("dataset_version", dataset_version)
 		mlflow.log_param("num_samples", len(filenames))
 
 		# accuracy metrics

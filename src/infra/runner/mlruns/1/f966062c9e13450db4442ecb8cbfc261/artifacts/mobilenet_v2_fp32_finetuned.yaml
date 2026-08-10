@@ -1,5 +1,5 @@
 name: mobilenet_v2_fp32_finetuned
-weights: /models/mobilenet_v2_fp32_finetuned.pt
+weights: /Volumes/T7/models/mobilenet_v2_fp32_finetuned.pt
 runtime: torch
 input_resolution: [224, 224]
 quantization: "none"
