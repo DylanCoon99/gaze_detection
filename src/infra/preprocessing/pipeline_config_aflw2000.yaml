@@ -1,0 +1,6 @@
+input_directory: /Volumes/T7/kaggle_datasets/datasets/mohamedadlyi/aflw2000-3d/versions/1/AFLW2000
+output_directory: /Volumes/T7/preprocessed_crops/AFLW2000
+margin: 0.2
+confidence: 0.5
+detection_model: blaze_face_full_range.tflite
+input_resolution: [224, 224]
