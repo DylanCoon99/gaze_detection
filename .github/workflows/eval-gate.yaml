@@ -18,9 +18,10 @@ jobs:
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/tests/fixtures/crops:/data \
+            -v ${{ github.workspace }}/tests/fixtures:/fixtures \
             -v ${{ github.workspace }}/tests/fixtures:/output \
             gaze-eval \
-            --config /app/runner/configs/mobilenet_v2_fp32_finetuned.yaml \
+            --config /fixtures/ci_model_config.yaml \
             --data /data \
             --output-json /output/results.json
 

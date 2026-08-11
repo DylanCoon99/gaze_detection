@@ -1,0 +1,6 @@
+name: ci_dummy_model
+weights: /fixtures/dummy_model.pt
+runtime: torch
+input_resolution: [224, 224]
+quantization: "none"
+preprocessing: standard_imagenet
