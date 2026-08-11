@@ -1,0 +1,28 @@
+name: Evaluation Regression Gate
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build eval image
+        run: docker build -t gaze-eval .
+
+      - name: Run evaluation
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/tests/fixtures/crops:/data \
+            -v ${{ github.workspace }}/tests/fixtures:/output \
+            gaze-eval \
+            --config /app/runner/configs/mobilenet_v2_fp32_finetuned.yaml \
+            --data /data \
+            --output-json /output/results.json
+
+      - name: Check for regressions
+        run: python scripts/check_regression.py --baseline tests/fixtures/baseline.json --results tests/fixtures/results.json
