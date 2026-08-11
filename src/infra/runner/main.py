@@ -1,6 +1,7 @@
 # Model Evaluation Runner
 import argparse
 import csv
+import json
 import logging
 import sys
 from pathlib import Path
@@ -71,6 +72,7 @@ def main():
 	parser.add_argument("--batch-size", type=int, default=32, help="Inference batch size")
 	parser.add_argument("--dataset-version", type=str, default=None, help="Dataset version identifier (e.g. DVC hash or tag)")
 	parser.add_argument("--threshold", type=float, default=15.0, help="Eyes-off-road threshold angle in degrees")
+	parser.add_argument("--output-json", type=str, default=None, help="Path to write results as JSON")
 	parser.add_argument("--verbose", action="store_true", help="Enable debug logging")
 	args = parser.parse_args()
 
@@ -204,6 +206,37 @@ def main():
 	print(f"  30-45°: MAE = {result.slicing.thirty_to_forty_five.mae_combined:.2f}°")
 	print(f"  45+°:   MAE = {result.slicing.forty_five_plus.mae_combined:.2f}°")
 	print("=" * 60)
+
+	# write JSON output
+	if args.output_json:
+		output = {
+			"model": config.name,
+			"num_samples": len(filenames),
+			"accuracy": {
+				"mae_yaw": round(result.accuracy.mae_yaw, 4),
+				"mae_pitch": round(result.accuracy.mae_pitch, 4),
+				"mae_combined": round(result.accuracy.mae_combined, 4),
+				"p50_yaw": round(float(result.accuracy.percentile_errors_yaw[0]), 4),
+				"p95_yaw": round(float(result.accuracy.percentile_errors_yaw[1]), 4),
+				"p99_yaw": round(float(result.accuracy.percentile_errors_yaw[2]), 4),
+				"p50_pitch": round(float(result.accuracy.percentile_errors_pitch[0]), 4),
+				"p95_pitch": round(float(result.accuracy.percentile_errors_pitch[1]), 4),
+				"p99_pitch": round(float(result.accuracy.percentile_errors_pitch[2]), 4),
+			},
+			"safety": {
+				"fpr": round(result.safety.fpr, 4),
+				"fnr": round(result.safety.fnr, 4),
+			},
+			"slicing": {
+				"mae_0_15": round(result.slicing.zero_to_fifteen.mae_combined, 4),
+				"mae_15_30": round(result.slicing.fifteen_to_thirty.mae_combined, 4),
+				"mae_30_45": round(result.slicing.thirty_to_forty_five.mae_combined, 4),
+				"mae_45_plus": round(result.slicing.forty_five_plus.mae_combined, 4),
+			},
+		}
+		with open(args.output_json, "w") as f:
+			json.dump(output, f, indent=2)
+		logger.info(f"Results written to {args.output_json}")
 
 	# teardown
 	model.teardown()
