@@ -1,0 +1,25 @@
+{
+  "model": "ci_dummy_model",
+  "num_samples": 20,
+  "accuracy": {
+    "mae_yaw": 35.0942,
+    "mae_pitch": 5.8069,
+    "mae_combined": 20.4506,
+    "p50_yaw": 33.6041,
+    "p95_yaw": 66.2683,
+    "p99_yaw": 68.1525,
+    "p50_pitch": 6.0271,
+    "p95_pitch": 6.8306,
+    "p99_pitch": 7.2004
+  },
+  "safety": {
+    "fpr": 0.0,
+    "fnr": 1.0
+  },
+  "slicing": {
+    "mae_0_15": 6.5016,
+    "mae_15_30": 13.2641,
+    "mae_30_45": 21.0484,
+    "mae_45_plus": 32.5377
+  }
+}

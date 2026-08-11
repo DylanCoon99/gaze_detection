@@ -1,1 +1,4 @@
 lab/data/
+data/raw/
+data/crops/
+*.mat

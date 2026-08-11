@@ -1,15 +1,11 @@
 numpy
 torch
 torchvision
-opencv-python
 mediapipe
 Pillow
 PyYAML
 scipy
-matplotlib
 scikit-learn
+mlflow
 pytest
-onnxruntime
-torchinfo
-kagglehub
-dvc
+kaggle

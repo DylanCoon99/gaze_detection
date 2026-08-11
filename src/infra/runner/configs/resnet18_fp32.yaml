@@ -1,0 +1,6 @@
+name: resnet18_fp32
+weights: /models/resnet18_fp32.pt
+runtime: torch
+input_resolution: [224, 224]
+quantization: "none"
+preprocessing: standard_imagenet
