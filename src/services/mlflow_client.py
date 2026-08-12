@@ -1,11 +1,15 @@
 # Wrapper around MLflow's tracking client.
 # Queries the gaze-eval experiment for runs, params, and metrics.
 import os
+from pathlib import Path
 
 import mlflow
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).parent / ".env")
 
 EXPERIMENT_NAME = "gaze-eval"
-TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI", "file:///app/mlruns")
+TRACKING_URI = os.environ["MLFLOW_TRACKING_URI"]
 
 mlflow.set_tracking_uri(TRACKING_URI)
 
@@ -45,6 +49,21 @@ def _run_to_dict(run):
 			"mae_45_plus": run.data.metrics.get("mae_slice_45_plus"),
 		},
 	}
+
+
+def get_latest_per_model():
+	"""Return the most recent run for each distinct model."""
+	runs = mlflow.search_runs(
+		experiment_names=[EXPERIMENT_NAME],
+		order_by=["start_time DESC"],
+		output_format="list",
+	)
+	latest = {}
+	for r in runs:
+		name = r.data.params.get("model_name")
+		if name and name not in latest:
+			latest[name] = _run_to_dict(r)
+	return list(latest.values())
 
 
 def get_all_runs():
