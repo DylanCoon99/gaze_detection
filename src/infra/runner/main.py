@@ -3,7 +3,9 @@ import argparse
 import csv
 import json
 import logging
+import platform
 import sys
+import time
 from pathlib import Path
 
 import numpy as np
@@ -117,6 +119,7 @@ def main():
 	])
 
 	all_predictions = []
+	batch_times_ms = []
 	with torch.no_grad():
 		for i in range(0, len(filenames), batch_size):
 			batch_filenames = filenames[i:i + batch_size]
@@ -127,7 +130,10 @@ def main():
 				batch_images.append(img)
 
 			batch_tensor = torch.stack(batch_images)
+			t0 = time.perf_counter()
 			preds = model.infer(batch_tensor)
+			t1 = time.perf_counter()
+			batch_times_ms.append((t1 - t0) * 1000)
 			all_predictions.append(preds.cpu())
 
 			if (i // batch_size) % 10 == 0:
@@ -137,7 +143,7 @@ def main():
 	logger.info("Inference complete")
 
 	# generate report
-	result = report(y_pred, y_true, threshold=args.threshold)
+	result = report(y_pred, y_true, threshold=args.threshold, batch_times_ms=batch_times_ms)
 
 	# log to MLflow
 	mlflow.set_experiment("gaze-eval")
@@ -150,6 +156,8 @@ def main():
 		mlflow.log_param("input_resolution", config.input_resolution)
 		mlflow.log_param("batch_size", args.batch_size)
 		mlflow.log_param("threshold_angle", args.threshold)
+		mlflow.log_param("device", str(model.device))
+		mlflow.log_param("hardware", platform.processor() or platform.machine())
 		# auto-read DVC hash if no version provided
 		if args.dataset_version:
 			dataset_version = args.dataset_version
@@ -182,6 +190,12 @@ def main():
 		mlflow.log_metric("mae_slice_30_45", result.slicing.thirty_to_forty_five.mae_combined)
 		mlflow.log_metric("mae_slice_45_plus", result.slicing.forty_five_plus.mae_combined)
 
+		# latency metrics
+		mlflow.log_metric("latency_mean_ms", result.latency.mean_ms)
+		mlflow.log_metric("latency_p50_ms", result.latency.p50_ms)
+		mlflow.log_metric("latency_p95_ms", result.latency.p95_ms)
+		mlflow.log_metric("latency_p99_ms", result.latency.p99_ms)
+
 		# log the config file as artifact
 		mlflow.log_artifact(args.config)
 
@@ -205,6 +219,14 @@ def main():
 	print(f"  15-30°: MAE = {result.slicing.fifteen_to_thirty.mae_combined:.2f}°")
 	print(f"  30-45°: MAE = {result.slicing.thirty_to_forty_five.mae_combined:.2f}°")
 	print(f"  45+°:   MAE = {result.slicing.forty_five_plus.mae_combined:.2f}°")
+	print(f"\nLatency (per batch):")
+	print(f"  Mean: {result.latency.mean_ms:.2f} ms")
+	print(f"  p50:  {result.latency.p50_ms:.2f} ms")
+	print(f"  p95:  {result.latency.p95_ms:.2f} ms")
+	print(f"  p99:  {result.latency.p99_ms:.2f} ms")
+	print(f"\nHardware:")
+	print(f"  Device: {model.device}")
+	print(f"  Hardware: {platform.processor() or platform.machine()}")
 	print("=" * 60)
 
 	# write JSON output
@@ -232,6 +254,12 @@ def main():
 				"mae_15_30": round(result.slicing.fifteen_to_thirty.mae_combined, 4),
 				"mae_30_45": round(result.slicing.thirty_to_forty_five.mae_combined, 4),
 				"mae_45_plus": round(result.slicing.forty_five_plus.mae_combined, 4),
+			},
+			"latency": {
+				"mean_ms": round(result.latency.mean_ms, 4),
+				"p50_ms": round(result.latency.p50_ms, 4),
+				"p95_ms": round(result.latency.p95_ms, 4),
+				"p99_ms": round(result.latency.p99_ms, 4),
 			},
 		}
 		with open(args.output_json, "w") as f:

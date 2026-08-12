@@ -16,6 +16,9 @@ def pareto_frontier(models, metric_a, metric_b):
 			val = val[p]
 		return val
 
+	# Filter out models with missing values for either metric
+	models = [m for m in models if get_value(m, metric_a) is not None and get_value(m, metric_b) is not None]
+
 	# Sort by metric_a ascending
 	sorted_models = sorted(models, key=lambda m: get_value(m, metric_a))
 

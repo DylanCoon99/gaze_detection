@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 
 from accuracy import get_accuracy, Accuracy
+from latency import get_latency, Latency
 from safety import get_safety, Safety
 from slicing import get_slicing, Slicing
 
@@ -16,17 +17,20 @@ class Report:
 	accuracy: Accuracy
 	safety: Safety
 	slicing: Slicing
+	latency: Latency
 
 
 # needs to take predictions and labels as input; called by the runner
-def report(y_pred, y_true, threshold=15): # threshold should probably some from the model config or passed as an argument when the runner is ran
+def report(y_pred, y_true, threshold=15, batch_times_ms=None):
 
 	# call accuracy
 	accuracy = get_accuracy(y_pred, y_true)
 	# call safety
-	safety = get_safety(y_pred, y_true, threshold_angle=threshold) 
+	safety = get_safety(y_pred, y_true, threshold_angle=threshold)
 	# call slicing
 	slicing = get_slicing(y_pred, y_true)
-	
+	# call latency
+	latency = get_latency(batch_times_ms or [])
+
 	# return the Report object
-	return Report(accuracy=accuracy, safety=safety, slicing=slicing)
+	return Report(accuracy=accuracy, safety=safety, slicing=slicing, latency=latency)

@@ -64,6 +64,12 @@ class TorchModel(BaseModel):
 
 		self.model.eval()
 
+		# apply post-training quantization if configured
+		if self.config.quantization == "dynamic_int8":
+			self.model = torch.quantization.quantize_dynamic(
+				self.model, {torch.nn.Linear, torch.nn.Conv2d}, dtype=torch.qint8
+			)
+
 
 		# think about this later
 		'''

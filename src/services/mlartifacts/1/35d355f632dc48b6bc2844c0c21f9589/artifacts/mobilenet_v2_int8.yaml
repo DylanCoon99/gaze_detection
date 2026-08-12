@@ -1,0 +1,6 @@
+name: mobilenet_v2_int8
+weights: /Volumes/T7/models/mobilenet_v2_fp32_finetuned.pt
+runtime: torch
+input_resolution: [224, 224]
+quantization: "dynamic_int8"
+preprocessing: standard_imagenet

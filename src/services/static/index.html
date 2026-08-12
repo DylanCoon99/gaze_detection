@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gaze Eval Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            surface: { 50: '#1e1e2e', 100: '#181825', 200: '#11111b', 300: '#0b0b14' },
+            accent: { 400: '#89b4fa', 500: '#74a8fc', 600: '#5b9afb' },
+            mint: '#a6e3a1',
+            peach: '#fab387',
+            mauve: '#cba6f7',
+            flamingo: '#f2cdcd',
+            red: '#f38ba8',
+            yellow: '#f9e2af',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #11111b; }
+    ::-webkit-scrollbar-thumb { background: #45475a; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #585b70; }
+    .nav-item { transition: all 0.15s ease; }
+    .nav-item.active { background: rgba(137, 180, 250, 0.1); border-left: 3px solid #89b4fa; color: #89b4fa; }
+    .nav-item:not(.active):hover { background: rgba(255,255,255,0.04); }
+    .card { background: #1e1e2e; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; }
+    .table-row:hover { background: rgba(137, 180, 250, 0.04); }
+    .th-sort { cursor: pointer; user-select: none; }
+    .th-sort:hover { color: #89b4fa; }
+    .fade-in { animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .spinner { border: 3px solid rgba(137,180,250,0.15); border-top-color: #89b4fa; border-radius: 50%; width: 32px; height: 32px; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .metric-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; }
+  </style>
+</head>
+<body class="dark h-full bg-surface-300 text-gray-200">
+
+  <!-- Layout -->
+  <div class="flex h-full">
+
+    <!-- Sidebar -->
+    <aside class="w-60 flex-shrink-0 bg-surface-200 border-r border-white/5 flex flex-col">
+      <!-- Logo -->
+      <div class="px-5 py-5 border-b border-white/5">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-accent-400/15 flex items-center justify-center">
+            <svg class="w-5 h-5 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-sm font-bold text-white tracking-tight">Gaze Eval</h1>
+            <p class="text-[10px] text-gray-500 font-medium tracking-widest uppercase">Platform</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav -->
+      <nav class="flex-1 px-3 py-4 space-y-1">
+        <button onclick="navigate('overview')" id="nav-overview" class="nav-item active w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+          Models Overview
+        </button>
+        <button onclick="navigate('runs')" id="nav-runs" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          All Runs
+        </button>
+        <button onclick="navigate('detail')" id="nav-detail" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          Model Detail
+        </button>
+        <button onclick="navigate('pareto')" id="nav-pareto" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+          Pareto Plot
+        </button>
+      </nav>
+
+      <!-- Footer -->
+      <div class="px-5 py-4 border-t border-white/5">
+        <p class="text-[11px] text-gray-600">Gaze Eval Platform v1.0</p>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto">
+      <!-- Top bar -->
+      <header class="sticky top-0 z-10 bg-surface-300/80 backdrop-blur-md border-b border-white/5 px-8 py-4">
+        <h2 id="page-title" class="text-lg font-semibold text-white">Models Overview</h2>
+        <p id="page-subtitle" class="text-xs text-gray-500 mt-0.5">Best run per model</p>
+      </header>
+
+      <div class="p-8">
+        <!-- View: Overview -->
+        <section id="view-overview" class="fade-in">
+          <div id="overview-loading" class="flex justify-center py-20"><div class="spinner"></div></div>
+          <div id="overview-empty" class="hidden text-center py-20 text-gray-500">No models found. Run an evaluation to get started.</div>
+          <div id="overview-grid" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5"></div>
+        </section>
+
+        <!-- View: All Runs -->
+        <section id="view-runs" class="hidden fade-in">
+          <div id="runs-loading" class="flex justify-center py-20"><div class="spinner"></div></div>
+          <div id="runs-empty" class="hidden text-center py-20 text-gray-500">No runs found.</div>
+          <div id="runs-table-wrap" class="hidden card overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="border-b border-white/5 text-left">
+                    <th class="th-sort px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider" data-col="model_name">Model</th>
+                    <th class="th-sort px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider" data-col="mae_combined">MAE Comb.</th>
+                    <th class="th-sort px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider" data-col="mae_yaw">MAE Yaw</th>
+                    <th class="th-sort px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider" data-col="mae_pitch">MAE Pitch</th>
+                    <th class="th-sort px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider" data-col="fpr">FPR</th>
+                    <th class="th-sort px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider" data-col="fnr">FNR</th>
+                    <th class="th-sort px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider" data-col="latency_mean_ms">Latency (ms)</th>
+                    <th class="px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider">Device</th>
+                    <th class="px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider">Hardware</th>
+                    <th class="px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider">Quant.</th>
+                    <th class="px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider">Samples</th>
+                  </tr>
+                </thead>
+                <tbody id="runs-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- View: Model Detail -->
+        <section id="view-detail" class="hidden fade-in">
+          <div class="flex items-center gap-4 mb-6">
+            <label class="text-sm text-gray-400 font-medium">Select Model</label>
+            <select id="detail-model-select" class="bg-surface-50 border border-white/10 rounded-lg px-4 py-2 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-accent-400/40 min-w-[220px]">
+              <option value="">Loading models...</option>
+            </select>
+          </div>
+          <div id="detail-loading" class="hidden flex justify-center py-20"><div class="spinner"></div></div>
+          <div id="detail-empty" class="hidden text-center py-20 text-gray-500">Select a model to view its runs.</div>
+          <div id="detail-content" class="hidden space-y-6">
+            <div class="card p-5">
+              <h3 class="text-sm font-semibold text-gray-300 mb-4">Metric Trends Across Runs</h3>
+              <div class="h-72"><canvas id="detail-chart"></canvas></div>
+            </div>
+            <div class="card overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-white/5 text-left">
+                      <th class="px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider">Run ID</th>
+                      <th class="px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider">MAE Comb.</th>
+                      <th class="px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider">MAE Yaw</th>
+                      <th class="px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider">MAE Pitch</th>
+                      <th class="px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider">FPR</th>
+                      <th class="px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider">FNR</th>
+                      <th class="px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider">Latency (ms)</th>
+                      <th class="px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider">Quant.</th>
+                      <th class="px-4 py-3 font-semibold text-gray-400 text-xs uppercase tracking-wider">Device</th>
+                    </tr>
+                  </thead>
+                  <tbody id="detail-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- View: Pareto -->
+        <section id="view-pareto" class="hidden fade-in">
+          <div class="flex flex-wrap items-end gap-4 mb-6">
+            <div>
+              <label class="block text-xs text-gray-500 font-medium mb-1.5">Metric A (X-axis)</label>
+              <select id="pareto-metric-a" class="bg-surface-50 border border-white/10 rounded-lg px-4 py-2 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-accent-400/40 min-w-[220px]"></select>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 font-medium mb-1.5">Metric B (Y-axis)</label>
+              <select id="pareto-metric-b" class="bg-surface-50 border border-white/10 rounded-lg px-4 py-2 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-accent-400/40 min-w-[220px]"></select>
+            </div>
+            <button onclick="loadPareto()" class="px-5 py-2 bg-accent-400 hover:bg-accent-500 text-surface-300 font-semibold text-sm rounded-lg transition-colors">
+              Update
+            </button>
+          </div>
+          <div id="pareto-loading" class="hidden flex justify-center py-20"><div class="spinner"></div></div>
+          <div id="pareto-empty" class="hidden text-center py-20 text-gray-500">Select two metrics and click Update.</div>
+          <div id="pareto-content" class="hidden">
+            <div class="card p-5">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-semibold text-gray-300">Pareto Frontier</h3>
+                <div class="flex items-center gap-4 text-xs text-gray-500">
+                  <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-accent-400 inline-block"></span>Frontier</span>
+                  <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-gray-600 inline-block"></span>Non-frontier</span>
+                </div>
+              </div>
+              <div class="h-[480px]"><canvas id="pareto-chart"></canvas></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const API = 'http://localhost:8000';
+
+    // ── Helpers ──
+    function fmt(v, decimals = 3) {
+      if (v == null || v === '') return '—';
+      const n = Number(v);
+      return isNaN(n) ? String(v) : n.toFixed(decimals);
+    }
+
+    function getNestedValue(obj, path) {
+      return path.split('.').reduce((o, k) => (o && o[k] != null ? o[k] : null), obj);
+    }
+
+    function shortRunId(id) {
+      return id ? id.substring(0, 8) : '—';
+    }
+
+    // ── Navigation ──
+    const views = ['overview', 'runs', 'detail', 'pareto'];
+    const titles = {
+      overview: ['Models Overview', 'Best run per model'],
+      runs: ['All Runs', 'Every evaluation run recorded'],
+      detail: ['Model Detail', 'Per-model run history and trends'],
+      pareto: ['Pareto Plot', 'Multi-objective trade-off analysis'],
+    };
+
+    function navigate(view) {
+      views.forEach(v => {
+        document.getElementById(`view-${v}`).classList.toggle('hidden', v !== view);
+        const nav = document.getElementById(`nav-${v}`);
+        nav.classList.toggle('active', v === view);
+      });
+      document.getElementById('page-title').textContent = titles[view][0];
+      document.getElementById('page-subtitle').textContent = titles[view][1];
+
+      if (view === 'overview') loadOverview();
+      if (view === 'runs') loadRuns();
+      if (view === 'detail') loadDetailModels();
+      if (view === 'pareto') initPareto();
+    }
+
+    // ── Overview ──
+    async function loadOverview() {
+      const loading = document.getElementById('overview-loading');
+      const empty = document.getElementById('overview-empty');
+      const grid = document.getElementById('overview-grid');
+      loading.classList.remove('hidden');
+      empty.classList.add('hidden');
+      grid.innerHTML = '';
+
+      try {
+        const res = await fetch(`${API}/models`);
+        const data = await res.json();
+        const models = data.models || [];
+        loading.classList.add('hidden');
+
+        if (!models.length) { empty.classList.remove('hidden'); return; }
+
+        models.forEach(m => {
+          const card = document.createElement('div');
+          card.className = 'card p-5 hover:border-accent-400/20 transition-colors';
+          card.innerHTML = `
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <h3 class="text-base font-bold text-white">${m.model_name || '—'}</h3>
+                <p class="text-xs text-gray-500 mt-0.5">${m.weights || 'default weights'}</p>
+              </div>
+              <span class="metric-pill bg-accent-400/10 text-accent-400">${m.quantization || 'fp32'}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-3 mb-4">
+              <div>
+                <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">MAE Combined</p>
+                <p class="text-lg font-bold text-white">${fmt(m.accuracy?.mae_combined, 2)}</p>
+              </div>
+              <div>
+                <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">FPR</p>
+                <p class="text-lg font-bold text-peach">${fmt(m.safety?.fpr, 4)}</p>
+              </div>
+              <div>
+                <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">FNR</p>
+                <p class="text-lg font-bold text-red">${fmt(m.safety?.fnr, 4)}</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-3 pt-3 border-t border-white/5">
+              <div>
+                <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Latency</p>
+                <p class="text-sm font-semibold text-gray-300">${fmt(m.latency?.mean_ms, 1)} ms</p>
+              </div>
+              <div>
+                <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Device</p>
+                <p class="text-sm font-semibold text-gray-300">${m.device || '—'}</p>
+              </div>
+              <div>
+                <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Resolution</p>
+                <p class="text-sm font-semibold text-gray-300">${m.input_resolution || '—'}</p>
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      } catch (e) {
+        loading.classList.add('hidden');
+        empty.textContent = 'Failed to load models. Is the API running?';
+        empty.classList.remove('hidden');
+      }
+    }
+
+    // ── All Runs ──
+    let runsData = [];
+    let runsSortCol = 'mae_combined';
+    let runsSortAsc = true;
+
+    function getRunSortValue(run, col) {
+      const map = {
+        model_name: run.model_name || '',
+        mae_combined: run.accuracy?.mae_combined,
+        mae_yaw: run.accuracy?.mae_yaw,
+        mae_pitch: run.accuracy?.mae_pitch,
+        fpr: run.safety?.fpr,
+        fnr: run.safety?.fnr,
+        latency_mean_ms: run.latency?.mean_ms,
+      };
+      return map[col] ?? 0;
+    }
+
+    function renderRunsTable() {
+      const tbody = document.getElementById('runs-tbody');
+      const sorted = [...runsData].sort((a, b) => {
+        let va = getRunSortValue(a, runsSortCol);
+        let vb = getRunSortValue(b, runsSortCol);
+        if (typeof va === 'string') { va = va.toLowerCase(); vb = (vb || '').toLowerCase(); }
+        if (va < vb) return runsSortAsc ? -1 : 1;
+        if (va > vb) return runsSortAsc ? 1 : -1;
+        return 0;
+      });
+
+      tbody.innerHTML = sorted.map(r => `
+        <tr class="table-row border-b border-white/[0.03] transition-colors">
+          <td class="px-4 py-3 font-medium text-white">${r.model_name || '—'}</td>
+          <td class="px-4 py-3 font-mono text-accent-400">${fmt(r.accuracy?.mae_combined, 3)}</td>
+          <td class="px-4 py-3 font-mono text-gray-300">${fmt(r.accuracy?.mae_yaw, 3)}</td>
+          <td class="px-4 py-3 font-mono text-gray-300">${fmt(r.accuracy?.mae_pitch, 3)}</td>
+          <td class="px-4 py-3 font-mono text-peach">${fmt(r.safety?.fpr, 4)}</td>
+          <td class="px-4 py-3 font-mono text-red">${fmt(r.safety?.fnr, 4)}</td>
+          <td class="px-4 py-3 font-mono text-gray-300">${fmt(r.latency?.mean_ms, 1)}</td>
+          <td class="px-4 py-3 text-gray-400">${r.device || '—'}</td>
+          <td class="px-4 py-3 text-gray-400">${r.hardware || '—'}</td>
+          <td class="px-4 py-3"><span class="metric-pill bg-mauve/10 text-mauve">${r.quantization || 'fp32'}</span></td>
+          <td class="px-4 py-3 text-gray-400">${r.num_samples ?? '—'}</td>
+        </tr>
+      `).join('');
+
+      // Update sort indicators
+      document.querySelectorAll('#view-runs .th-sort').forEach(th => {
+        const col = th.dataset.col;
+        th.innerHTML = th.textContent.replace(/ [▲▼]$/, '');
+        if (col === runsSortCol) {
+          th.innerHTML += runsSortAsc ? ' ▲' : ' ▼';
+        }
+      });
+    }
+
+    async function loadRuns() {
+      const loading = document.getElementById('runs-loading');
+      const empty = document.getElementById('runs-empty');
+      const wrap = document.getElementById('runs-table-wrap');
+      loading.classList.remove('hidden');
+      empty.classList.add('hidden');
+      wrap.classList.add('hidden');
+
+      try {
+        const res = await fetch(`${API}/models/runs`);
+        const data = await res.json();
+        runsData = data.runs || [];
+        loading.classList.add('hidden');
+
+        if (!runsData.length) { empty.classList.remove('hidden'); return; }
+        wrap.classList.remove('hidden');
+        renderRunsTable();
+      } catch (e) {
+        loading.classList.add('hidden');
+        empty.textContent = 'Failed to load runs.';
+        empty.classList.remove('hidden');
+      }
+    }
+
+    // Sort click handler
+    document.querySelectorAll('#view-runs .th-sort').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.col;
+        if (runsSortCol === col) { runsSortAsc = !runsSortAsc; }
+        else { runsSortCol = col; runsSortAsc = true; }
+        renderRunsTable();
+      });
+    });
+
+    // ── Model Detail ──
+    let detailChart = null;
+
+    async function loadDetailModels() {
+      const select = document.getElementById('detail-model-select');
+      const empty = document.getElementById('detail-empty');
+      empty.classList.remove('hidden');
+      document.getElementById('detail-content').classList.add('hidden');
+
+      try {
+        const res = await fetch(`${API}/models`);
+        const data = await res.json();
+        const models = data.models || [];
+        select.innerHTML = '<option value="">-- Select a model --</option>';
+        const names = [...new Set(models.map(m => m.model_name).filter(Boolean))];
+        names.forEach(name => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          select.appendChild(opt);
+        });
+      } catch (e) {
+        select.innerHTML = '<option value="">Failed to load models</option>';
+      }
+    }
+
+    document.getElementById('detail-model-select').addEventListener('change', async function () {
+      const name = this.value;
+      if (!name) {
+        document.getElementById('detail-empty').classList.remove('hidden');
+        document.getElementById('detail-content').classList.add('hidden');
+        return;
+      }
+
+      const loading = document.getElementById('detail-loading');
+      const content = document.getElementById('detail-content');
+      const empty = document.getElementById('detail-empty');
+      loading.classList.remove('hidden');
+      empty.classList.add('hidden');
+      content.classList.add('hidden');
+
+      try {
+        const res = await fetch(`${API}/models/runs/${encodeURIComponent(name)}`);
+        const data = await res.json();
+        const runs = data.runs || [];
+        loading.classList.add('hidden');
+
+        if (!runs.length) { empty.textContent = 'No runs found for this model.'; empty.classList.remove('hidden'); return; }
+
+        content.classList.remove('hidden');
+
+        // Table
+        const tbody = document.getElementById('detail-tbody');
+        tbody.innerHTML = runs.map(r => `
+          <tr class="table-row border-b border-white/[0.03] transition-colors">
+            <td class="px-4 py-3 font-mono text-xs text-gray-400">${shortRunId(r.run_id)}</td>
+            <td class="px-4 py-3 font-mono text-accent-400">${fmt(r.accuracy?.mae_combined, 3)}</td>
+            <td class="px-4 py-3 font-mono text-gray-300">${fmt(r.accuracy?.mae_yaw, 3)}</td>
+            <td class="px-4 py-3 font-mono text-gray-300">${fmt(r.accuracy?.mae_pitch, 3)}</td>
+            <td class="px-4 py-3 font-mono text-peach">${fmt(r.safety?.fpr, 4)}</td>
+            <td class="px-4 py-3 font-mono text-red">${fmt(r.safety?.fnr, 4)}</td>
+            <td class="px-4 py-3 font-mono text-gray-300">${fmt(r.latency?.mean_ms, 1)}</td>
+            <td class="px-4 py-3"><span class="metric-pill bg-mauve/10 text-mauve">${r.quantization || 'fp32'}</span></td>
+            <td class="px-4 py-3 text-gray-400">${r.device || '—'}</td>
+          </tr>
+        `).join('');
+
+        // Chart
+        if (detailChart) detailChart.destroy();
+        const labels = runs.map((_, i) => `Run ${i + 1}`);
+        const ctx = document.getElementById('detail-chart').getContext('2d');
+        detailChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'MAE Combined',
+                data: runs.map(r => r.accuracy?.mae_combined),
+                backgroundColor: 'rgba(137,180,250,0.6)',
+                borderColor: '#89b4fa',
+                borderWidth: 1,
+                borderRadius: 4,
+                order: 2,
+              },
+              {
+                label: 'Latency (ms)',
+                data: runs.map(r => r.latency?.mean_ms),
+                type: 'line',
+                borderColor: '#fab387',
+                backgroundColor: 'rgba(250,179,135,0.1)',
+                pointBackgroundColor: '#fab387',
+                pointRadius: 4,
+                tension: 0.3,
+                yAxisID: 'y1',
+                order: 1,
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: { labels: { color: '#a6adc8', font: { size: 11 } } },
+            },
+            scales: {
+              x: { ticks: { color: '#585b70' }, grid: { color: 'rgba(255,255,255,0.03)' } },
+              y: {
+                position: 'left',
+                title: { display: true, text: 'MAE Combined', color: '#89b4fa', font: { size: 11 } },
+                ticks: { color: '#585b70' },
+                grid: { color: 'rgba(255,255,255,0.03)' },
+              },
+              y1: {
+                position: 'right',
+                title: { display: true, text: 'Latency (ms)', color: '#fab387', font: { size: 11 } },
+                ticks: { color: '#585b70' },
+                grid: { drawOnChartArea: false },
+              },
+            }
+          }
+        });
+      } catch (e) {
+        loading.classList.add('hidden');
+        empty.textContent = 'Failed to load runs for this model.';
+        empty.classList.remove('hidden');
+      }
+    });
+
+    // ── Pareto ──
+    const PARETO_METRICS = [
+      { value: 'accuracy.mae_combined', label: 'MAE Combined' },
+      { value: 'accuracy.mae_yaw', label: 'MAE Yaw' },
+      { value: 'accuracy.mae_pitch', label: 'MAE Pitch' },
+      { value: 'safety.fpr', label: 'FPR' },
+      { value: 'safety.fnr', label: 'FNR' },
+      { value: 'latency.mean_ms', label: 'Latency Mean (ms)' },
+      { value: 'slicing.mae_0_15', label: 'Slicing MAE 0-15' },
+      { value: 'slicing.mae_15_30', label: 'Slicing MAE 15-30' },
+      { value: 'slicing.mae_30_45', label: 'Slicing MAE 30-45' },
+      { value: 'slicing.mae_45_plus', label: 'Slicing MAE 45+' },
+    ];
+
+    let paretoChart = null;
+
+    function initPareto() {
+      const selA = document.getElementById('pareto-metric-a');
+      const selB = document.getElementById('pareto-metric-b');
+      if (selA.options.length === 0) {
+        PARETO_METRICS.forEach((m, i) => {
+          selA.innerHTML += `<option value="${m.value}" ${i === 0 ? 'selected' : ''}>${m.label}</option>`;
+          selB.innerHTML += `<option value="${m.value}" ${i === 5 ? 'selected' : ''}>${m.label}</option>`;
+        });
+      }
+      document.getElementById('pareto-empty').classList.remove('hidden');
+      document.getElementById('pareto-content').classList.add('hidden');
+    }
+
+    async function loadPareto() {
+      const metricA = document.getElementById('pareto-metric-a').value;
+      const metricB = document.getElementById('pareto-metric-b').value;
+      const loading = document.getElementById('pareto-loading');
+      const empty = document.getElementById('pareto-empty');
+      const content = document.getElementById('pareto-content');
+
+      loading.classList.remove('hidden');
+      empty.classList.add('hidden');
+      content.classList.add('hidden');
+
+      try {
+        // Fetch pareto frontier and all models
+        const [paretoRes, modelsRes] = await Promise.all([
+          fetch(`${API}/pareto?metric_a=${encodeURIComponent(metricA)}&metric_b=${encodeURIComponent(metricB)}`),
+          fetch(`${API}/models`),
+        ]);
+        const paretoData = await paretoRes.json();
+        const modelsData = await modelsRes.json();
+
+        const frontier = paretoData.frontier || [];
+        const allModels = modelsData.models || [];
+        const frontierIds = new Set(frontier.map(f => f.run_id));
+
+        loading.classList.add('hidden');
+
+        if (!allModels.length) {
+          empty.textContent = 'No models available.';
+          empty.classList.remove('hidden');
+          return;
+        }
+
+        content.classList.remove('hidden');
+
+        const labelA = PARETO_METRICS.find(m => m.value === metricA)?.label || metricA;
+        const labelB = PARETO_METRICS.find(m => m.value === metricB)?.label || metricB;
+
+        // Build datasets
+        const nonFrontier = allModels.filter(m => !frontierIds.has(m.run_id));
+
+        const nonFrontierPoints = nonFrontier.map(m => ({
+          x: getNestedValue(m, metricA),
+          y: getNestedValue(m, metricB),
+          label: m.model_name,
+        })).filter(p => p.x != null && p.y != null);
+
+        const frontierPoints = frontier.map(m => ({
+          x: getNestedValue(m, metricA),
+          y: getNestedValue(m, metricB),
+          label: m.model_name,
+        })).filter(p => p.x != null && p.y != null);
+
+        // Sort frontier points by x for the line
+        const sortedFrontier = [...frontierPoints].sort((a, b) => a.x - b.x);
+
+        if (paretoChart) paretoChart.destroy();
+        const ctx = document.getElementById('pareto-chart').getContext('2d');
+
+        paretoChart = new Chart(ctx, {
+          type: 'scatter',
+          data: {
+            datasets: [
+              {
+                label: 'Non-frontier',
+                data: nonFrontierPoints,
+                backgroundColor: 'rgba(88, 91, 112, 0.6)',
+                borderColor: 'rgba(88, 91, 112, 0.8)',
+                pointRadius: 7,
+                pointHoverRadius: 10,
+                order: 2,
+              },
+              {
+                label: 'Pareto Frontier',
+                data: frontierPoints,
+                backgroundColor: 'rgba(137, 180, 250, 0.85)',
+                borderColor: '#89b4fa',
+                borderWidth: 2,
+                pointRadius: 10,
+                pointHoverRadius: 13,
+                order: 1,
+              },
+              {
+                label: 'Frontier Line',
+                data: sortedFrontier,
+                type: 'line',
+                borderColor: 'rgba(137, 180, 250, 0.3)',
+                borderWidth: 2,
+                borderDash: [6, 4],
+                pointRadius: 0,
+                fill: false,
+                tension: 0,
+                order: 3,
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                labels: {
+                  color: '#a6adc8',
+                  font: { size: 11 },
+                  filter: (item) => item.text !== 'Frontier Line',
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (ctx) {
+                    const pt = ctx.raw;
+                    return `${pt.label}: (${fmt(pt.x, 3)}, ${fmt(pt.y, 3)})`;
+                  }
+                }
+              },
+            },
+            scales: {
+              x: {
+                title: { display: true, text: labelA, color: '#a6adc8', font: { size: 12 } },
+                ticks: { color: '#585b70' },
+                grid: { color: 'rgba(255,255,255,0.03)' },
+              },
+              y: {
+                title: { display: true, text: labelB, color: '#a6adc8', font: { size: 12 } },
+                ticks: { color: '#585b70' },
+                grid: { color: 'rgba(255,255,255,0.03)' },
+              }
+            }
+          },
+          plugins: [{
+            afterDraw: function (chart) {
+              const ctx = chart.ctx;
+              ctx.save();
+              ctx.font = '500 10px Inter, sans-serif';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'bottom';
+
+              // Label frontier points
+              const ds = chart.data.datasets[1];
+              const meta = chart.getDatasetMeta(1);
+              meta.data.forEach((point, i) => {
+                ctx.fillStyle = 'rgba(137, 180, 250, 0.9)';
+                ctx.fillText(ds.data[i].label, point.x, point.y - 14);
+              });
+
+              // Label non-frontier points (dimmer)
+              const ds0 = chart.data.datasets[0];
+              const meta0 = chart.getDatasetMeta(0);
+              meta0.data.forEach((point, i) => {
+                ctx.fillStyle = 'rgba(166, 173, 200, 0.5)';
+                ctx.fillText(ds0.data[i].label, point.x, point.y - 10);
+              });
+
+              ctx.restore();
+            }
+          }]
+        });
+      } catch (e) {
+        loading.classList.add('hidden');
+        empty.textContent = 'Failed to load Pareto data. Is the API running?';
+        empty.classList.remove('hidden');
+      }
+    }
+
+    // ── Init ──
+    loadOverview();
+  </script>
+</body>
+</html>

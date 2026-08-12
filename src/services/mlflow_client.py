@@ -27,6 +27,8 @@ def _run_to_dict(run):
 		"threshold_angle": run.data.params.get("threshold_angle"),
 		"dataset_version": run.data.params.get("dataset_version"),
 		"num_samples": run.data.params.get("num_samples"),
+		"device": run.data.params.get("device"),
+		"hardware": run.data.params.get("hardware"),
 		"accuracy": {
 			"mae_yaw": run.data.metrics.get("mae_yaw"),
 			"mae_pitch": run.data.metrics.get("mae_pitch"),
@@ -47,6 +49,12 @@ def _run_to_dict(run):
 			"mae_15_30": run.data.metrics.get("mae_slice_15_30"),
 			"mae_30_45": run.data.metrics.get("mae_slice_30_45"),
 			"mae_45_plus": run.data.metrics.get("mae_slice_45_plus"),
+		},
+		"latency": {
+			"mean_ms": run.data.metrics.get("latency_mean_ms"),
+			"p50_ms": run.data.metrics.get("latency_p50_ms"),
+			"p95_ms": run.data.metrics.get("latency_p95_ms"),
+			"p99_ms": run.data.metrics.get("latency_p99_ms"),
 		},
 	}
 

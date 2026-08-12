@@ -1,11 +1,32 @@
 # FastAPI app entry point and route definitions.
 # Exposes endpoints: GET /models, GET /models/{name}, GET /pareto
+from pathlib import Path
+
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from mlflow_client import get_latest_per_model, get_all_runs, get_runs_by_model
 from pareto import pareto_frontier
 
 # Initialize the application instance
 app = FastAPI()
+
+app.add_middleware(
+	CORSMiddleware,
+	allow_origins=["*"],
+	allow_methods=["*"],
+	allow_headers=["*"],
+)
+
+# Serve static files
+static_dir = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+
+@app.get("/")
+def index():
+	return FileResponse(static_dir / "index.html")
 
 # Define a GET model endpoint — returns latest run per model
 @app.get("/models")
