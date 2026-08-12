@@ -2,7 +2,7 @@
 # Exposes endpoints: GET /models, GET /models/{name}, GET /pareto
 from fastapi import FastAPI
 from mlflow_client import get_latest_per_model, get_all_runs, get_runs_by_model
-from pareto import generate_pareto
+from pareto import pareto_frontier
 
 # Initialize the application instance
 app = FastAPI()
@@ -29,4 +29,16 @@ def get_model_runs(model_name: str):
 	return {"runs": runs}
 
 
-
+@app.get("/pareto")
+def get_pareto(
+	metric_a: str = "accuracy.mae_combined",
+	metric_b: str = "safety.fnr",
+):
+	"""Return Pareto-optimal models across two metrics (lower is better)."""
+	models = get_latest_per_model()
+	frontier = pareto_frontier(models, metric_a, metric_b)
+	return {
+		"metric_a": metric_a,
+		"metric_b": metric_b,
+		"frontier": frontier,
+	}

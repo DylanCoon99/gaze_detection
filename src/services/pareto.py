@@ -3,6 +3,29 @@
 # (models where no other model is better on both axes simultaneously).
 
 
-def generate_pareto():
+def pareto_frontier(models, metric_a, metric_b):
+	"""Filter models to only those on the Pareto frontier.
 
-	return
+	Both metrics are assumed to be "lower is better".
+	metric_a and metric_b are dot-notation keys (e.g. "accuracy.mae_combined").
+	"""
+	def get_value(model, key):
+		parts = key.split(".")
+		val = model
+		for p in parts:
+			val = val[p]
+		return val
+
+	# Sort by metric_a ascending
+	sorted_models = sorted(models, key=lambda m: get_value(m, metric_a))
+
+	frontier = []
+	best_b = float("inf")
+
+	for model in sorted_models:
+		val_b = get_value(model, metric_b)
+		if val_b < best_b:
+			frontier.append(model)
+			best_b = val_b
+
+	return frontier
