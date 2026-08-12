@@ -1,112 +1,102 @@
 # Gaze Evaluation Platform
 
-Evaluation infrastructure for driver-monitoring gaze models: a system that answers **"which model should we ship, and how do we know?"** repeatedly and automatically, rather than once by hand.
+Evaluation infrastructure for driver-monitoring gaze models: a system that answers **"which model should we ship, and how do we know?"** automatically and repeatedly.
 
 ---
 
-## The Problem
+## What It Does
 
-Benchmarking a model by hand answers the question once. When models change, datasets update, or deployment constraints shift, you run the notebook again and hope you didn't forget a step. This project replaces that with infrastructure: declarative model configs, versioned data, automated evaluation, and a CI gate that blocks regressions before they merge.
+This platform evaluates gaze estimation models against a common dataset and set of metrics, tracks results over time, and blocks regressions via CI. Instead of running a notebook once and eyeballing numbers, every model evaluation is containerized, logged, and compared automatically.
+
+**Core workflow:**
+1. Define a model in a YAML config (architecture, weights, quantization, runtime)
+2. Run the evaluation runner — it loads the model, runs inference on preprocessed face crops, computes metrics, and logs everything to MLflow
+3. Open a PR — CI builds the Docker image, runs the eval, and blocks the merge if any metric regresses
+4. Compare models in the dashboard — a FastAPI service with an interactive Pareto frontier view
 
 ---
 
 ## Design Principle
 
-> Adding a sixth architecture should require writing one config file and changing nothing else.
+> Adding a new model should require writing one config file and changing nothing else.
 
-If adding a model means editing the runner, this is a benchmark script. If it means dropping in a YAML and opening a PR, it's evaluation infrastructure.
+A model config looks like this:
+
+```yaml
+name: mobilenet_v2_fp32_finetuned
+weights: /models/mobilenet_v2_fp32_finetuned.pt
+runtime: torch
+input_resolution: [224, 224]
+quantization: "none"
+preprocessing: standard_imagenet
+```
+
+Set `quantization: "dynamic_int8"` and the runner applies post-training quantization automatically — same weights, different runtime behavior.
 
 ---
 
 ## Architecture
 
 ```
-  Model configs              Dataset version
-  (5 architectures, YAML)    (DVC-pinned crops)
+  Model configs              Preprocessed dataset
+  (YAML)                     (crops + labels.csv)
           \                        /
            \                      /
             v                    v
            +----------------------+
-           |     Eval runner      |
-           | containerized,       |
-           | runs on device       |
+           |     Eval Runner      |
+           |   (Dockerized)       |
            +----------------------+
                       |
                       v
            +----------------------+
-           |      Run store       |
+           |       MLflow         |
            | params, metrics,     |
-           | artifacts (MLflow)   |
+           | artifacts            |
            +----------------------+
                 /            \
                v              v
-      CI regression      Comparison view
-      gate               (Pareto frontier)
-      (blocks PR)
+      CI Regression       FastAPI Dashboard
+      Gate                (Pareto frontier,
+      (GitHub Actions)     model comparison)
 ```
-
----
-
-## Models
-
-| # | Model | Family | Runtime | Quantization | Purpose |
-|---|---|---|---|---|---|
-| 1 | Geometric baseline | geometric | rule-based | n/a | Proves the runner interface is genuinely abstract, not just "PyTorch models with different configs" |
-| 2 | MobileNetV2 FP32 | cnn | torch | none | CNN baseline, no quantization |
-| 3 | MobileNetV3 INT8 | cnn | tflite_xnnpack | int8_ptq | Quantized CNN, different runtime — creates a clear Pareto tradeoff against #2 |
-| 4 | ResNet-18 FP32 | cnn | torch | none | Larger CNN, intentionally worse on latency/size — should be dominated on the Pareto plot |
-| 5 | MobileViT-small | vit | torch or tflite | none | Transformer-based — proves the platform isn't CNN-specific |
-
-3 runtimes (rule-based, PyTorch, TFLite), 2 quantization levels (FP32, INT8), 3 architecture families (geometric, CNN, ViT).
-
----
-
-## Task Definition
-
-**Input:** Cropped and aligned face image (112×112 RGB)
-**Output:** Yaw and pitch angles in degrees
-**Loss:** Mean squared error on yaw and pitch
-**Primary metric:** Mean absolute error (MAE) in degrees on the AFLW2000 test set
-
----
-
-## Dataset
-
-| Split | Source | Size |
-|---|---|---|
-| Train | 300W-LP | ~60,000 images |
-| Eval | AFLW2000 | 2,000 images |
-
-Data is pinned with DVC, **including the preprocessing output**, not just the raw archives. When a number moves, you know whether the model changed or the face-crop margin did.
 
 ---
 
 ## Metrics
 
-| Metric | Why |
+| Category | Metrics |
 |---|---|
-| Mean / p50 angular error | Baseline comparability with literature |
-| **p95 / p99 angular error** | A model with 4° mean that occasionally reports 30° misses real glances away |
-| **Eyes-off-road FPR / FNR** | The actual product decision: given a gaze-cone threshold + dwell time, does it fire correctly? |
-| Latency p50 / p99 | Mean latency is not a deployment metric |
-| Power (mW) | Pareto axis |
-| Model size (MB), peak RSS | Deployment constraint |
+| Accuracy | MAE (yaw, pitch, combined), p50/p95/p99 angular error |
+| Safety | Eyes-off-road false positive rate, false negative rate |
+| Latency | Per-batch mean, p50, p95, p99 (ms) |
+| Slicing | All accuracy metrics broken out by head-pose bin (0-15, 15-30, 30-45, 45+) |
 
-### Slices
-
-Every metric is broken out by:
-- **Head-pose bin** — especially yaw beyond ±45°, where models fall apart and where a driver checking a blind spot lives
-- **Glasses / no glasses**
-- **Lighting condition**
+Hardware info (device, chip) is logged alongside latency so comparisons are apples-to-apples.
 
 ---
 
 ## CI Regression Gate
 
-- PR triggers eval on a held-out subset
-- Results compared against the current baseline run
-- Build **fails** if any tracked metric degrades past threshold
-- Bot comment on the PR with the metric delta table
+Every pull request to `main` triggers a GitHub Actions workflow that:
+
+1. Builds the Docker image
+2. Runs evaluation on a test fixture (20-image subset checked into the repo)
+3. Compares results against `tests/fixtures/baseline.json`
+4. **Fails the build** if any metric regresses beyond its tolerance
+
+Tolerances are defined in `scripts/check_regression.py` — for example, MAE can't increase by more than 0.5 degrees, FNR can't increase by more than 2%.
+
+---
+
+## Dashboard
+
+A FastAPI service reads from MLflow and serves an interactive dashboard with:
+
+- **Models Overview** — latest metrics for each model at a glance
+- **All Runs** — sortable table of every evaluation run
+- **Model Detail** — run history for a specific model
+- **Pareto Plot** — interactive scatter plot comparing any two metrics, with Pareto-optimal models highlighted
 
 ---
 
@@ -114,25 +104,74 @@ Every metric is broken out by:
 
 | Layer | Choice |
 |---|---|
-| Config | Hydra or pydantic-settings |
+| Config | Dataclass + YAML |
 | Data versioning | DVC |
-| Tracking | MLflow (self-hosted) |
-| Artifacts | S3 or MinIO |
+| Preprocessing | MediaPipe BlazeFace detection + crop pipeline |
+| Tracking | MLflow |
 | Container | Docker |
 | CI | GitHub Actions |
-| Serving | FastAPI |
-| IaC | Terraform (optional) |
+| API / Dashboard | FastAPI + Tailwind CSS + Chart.js |
 
 ---
 
-## Build Order
+## Project Structure
 
-1. Runner interface + config layer
-2. Dataset versioning (DVC)
-3. Metrics + slicing
-4. MLflow tracking
-5. Dockerfile / reproducible run
-6. CI regression gate
-7. Pareto view (FastAPI)
+```
+src/
+  infra/
+    runner/          # Evaluation runner — loads model, runs inference, logs to MLflow
+      configs/       # Model YAML configs
+      models.py      # BaseModel ABC + TorchModel (with PTQ support)
+      main.py        # CLI entrypoint
+    metrics/         # Accuracy, safety, latency, and slicing calculations
+    preprocessing/   # MediaPipe face detection + crop pipeline
+  services/          # FastAPI dashboard + MLflow client
+scripts/
+  check_regression.py   # CI regression comparison script
+  download_data.sh      # Downloads 300W-LP from Kaggle + runs preprocessing
+tests/
+  fixtures/             # Test subset (20 images + baseline metrics + dummy model)
+.github/
+  workflows/
+    eval-gate.yaml      # CI regression gate workflow
+```
 
-Milestone check after step 6: can a stranger clone the repo, run one command, and reproduce your numbers?
+---
+
+## Getting Started
+
+**Download and preprocess the dataset:**
+
+```bash
+./scripts/download_data.sh
+```
+
+This downloads 300W-LP from Kaggle and runs the preprocessing pipeline to produce face crops and labels.
+
+**Run an evaluation locally:**
+
+```bash
+export MLFLOW_TRACKING_URI=http://localhost:5001
+mlflow ui --port 5001 &
+python src/infra/runner/main.py \
+  --config src/infra/runner/configs/mobilenet_v2_fp32_finetuned.yaml \
+  --data /path/to/preprocessed/crops
+```
+
+**Run via Docker:**
+
+```bash
+docker build -t gaze-eval .
+docker run --rm \
+  -v /path/to/crops:/data \
+  -v /path/to/models:/models \
+  gaze-eval --config /app/runner/configs/mobilenet_v2_fp32_finetuned.yaml --data /data
+```
+
+**Launch the dashboard:**
+
+```bash
+cd src/services
+uvicorn main:app --reload
+# Open http://localhost:8000
+```
