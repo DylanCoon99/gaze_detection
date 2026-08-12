@@ -1,0 +1,25 @@
+{
+  "model": "mobilenet_v2_fp32_finetuned",
+  "num_samples": 20,
+  "accuracy": {
+    "mae_yaw": 21.87,
+    "mae_pitch": 5.17,
+    "mae_combined": 13.52,
+    "p50_yaw": 19.26,
+    "p95_yaw": 60.45,
+    "p99_yaw": 63.60,
+    "p50_pitch": 6.29,
+    "p95_pitch": 8.17,
+    "p99_pitch": 8.50
+  },
+  "safety": {
+    "fpr": 0.0000,
+    "fnr": 0.6000
+  },
+  "slicing": {
+    "mae_0_15": 4.74,
+    "mae_15_30": 7.80,
+    "mae_30_45": 13.78,
+    "mae_45_plus": 21.77
+  }
+}
